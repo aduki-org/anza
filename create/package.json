@@ -1,6 +1,6 @@
 {
   "name": "@adukiorg/create-anza",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Create a new anza app — `npm create @adukiorg/anza`",
   "type": "module",
   "bin": {
@@ -10,7 +10,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@adukiorg/anza": "0.2.5"
+    "@adukiorg/anza": "0.2.6"
   },
   "keywords": [
     "anza",

@@ -8,6 +8,7 @@
 
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { realpathSync } from 'fs';
 import { resolve } from './find.js';
 import { start } from './launch.js';
 
@@ -20,8 +21,9 @@ const __dirname  = dirname(__filename);
 const library = join(__dirname, '..', '..');
 const root    = join(library, '..');
 
-// CLI entry only when executed directly
-const isCli = process.argv[1] === __filename;
+// CLI entry only when executed directly (handles npm bin symlinks)
+const argvFile = process.argv[1] ? realpathSync(process.argv[1]) : null;
+const isCli = argvFile === realpathSync(__filename);
 
 if (isCli) {
   try {

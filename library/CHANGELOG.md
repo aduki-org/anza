@@ -17,6 +17,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.6] — 2026-06-09
+
+### Fixed
+
+- `bin/anza/index.js` wrapper now uses `realpathSync` to correctly detect CLI entry through npm bin symlinks
+- `npm run dev` and `npx anza` now work from installed packages
+
+---
+
 ## [0.2.5] — 2026-06-09
 
 ### Fixed
