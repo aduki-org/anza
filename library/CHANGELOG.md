@@ -17,6 +17,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.5] — 2026-06-09
+
+### Fixed
+
+- Add `./package.json` export to `@adukiorg/anza` so `npm create` resolver works
+- Fix `@adukiorg/create-anza` fallback resolution for local development
+
+---
+
 ## [0.2.4] — 2026-06-09
 
 ### Added
