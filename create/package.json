@@ -1,0 +1,27 @@
+{
+  "name": "@adukiorg/create-anza",
+  "version": "0.2.4",
+  "description": "Create a new anza app — `npm create @adukiorg/anza`",
+  "type": "module",
+  "bin": {
+    "create-anza": "./index.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "@adukiorg/anza": "0.2.4"
+  },
+  "keywords": [
+    "anza",
+    "scaffold",
+    "create"
+  ],
+  "author": "fescii",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aduki-org/anza.git",
+    "directory": "create"
+  }
+}

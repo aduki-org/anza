@@ -16,6 +16,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.4] — 2026-06-09
+
+### Added
+
+- **`@adukiorg/create-anza`** package for `npm create @adukiorg/anza <name>`
+- `./bin/create` export added to `@adukiorg/anza` for programmatic scaffold access
+
+---
+
 ## [0.2.3] — 2026-06-09
 
 ### Fixed
