@@ -12,8 +12,20 @@ import { dirname, join, resolve, basename } from 'path';
 import { existsSync } from 'fs';
 
 const require = createRequire(import.meta.url);
-const anzaPkg = require.resolve('@adukiorg/anza/package.json');
-const library = dirname(anzaPkg);
+
+let library;
+try {
+  const anzaPkg = require.resolve('@adukiorg/anza/package.json');
+  library = dirname(anzaPkg);
+} catch (_) {
+  // Fallback for local development — resolve relative to this script in the repo
+  library = dirname(dirname(new URL(import.meta.url).pathname));
+}
+
+if (!library || !existsSync(join(library, 'package.json'))) {
+  console.error('@adukiorg/anza not found. Is it installed?');
+  process.exit(1);
+}
 
 const { run } = await import(join(library, 'bin', 'create', 'index.js'));
 
