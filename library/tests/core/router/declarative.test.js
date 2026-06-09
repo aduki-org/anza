@@ -11,18 +11,27 @@ import { router } from '../../../src/core/router/index.js';
 
 describe('Declarative Route-Coupling and Fluent Transitions', () => {
   let container;
+  let mainEl;
 
   beforeEach(() => {
     router.clear();
+
+    // Framework requires <main id="main"> for anchor().
+    mainEl = document.createElement('main');
+    mainEl.id = 'main';
+    document.body.appendChild(mainEl);
+
     container = document.createElement('div');
     container.id = 'test-container';
-    document.body.appendChild(container);
+    mainEl.appendChild(container);
   });
 
   afterEach(() => {
-    if (container) {
-      container.remove();
+    if (mainEl) {
+      mainEl.remove();
+      mainEl = null;
     }
+    container = null;
   });
 
   it('should automatically register routes and auto-mount elements on navigation match', async () => {

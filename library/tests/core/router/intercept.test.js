@@ -6,16 +6,24 @@
 
 import { router } from '../../../src/core/router/index.js';
 import { getContainer, registerContainer, clearContainers } from '../../../src/core/router/container.js';
+import { reset as resetBoot } from '../../../src/core/router/boot.js';
 
 describe('Router Interceptor', () => {
   let originalNavigation;
   let mockNavigation;
   let listeners;
+  let mainEl;
 
   beforeEach(() => {
+    // Framework requires <main id="main"> for anchor().
+    mainEl = document.createElement('main');
+    mainEl.id = 'main';
+    document.body.appendChild(mainEl);
+
     router.destroy();
     router.clear();
     clearContainers();
+    resetBoot();
 
     listeners = {};
     mockNavigation = {
@@ -39,7 +47,10 @@ describe('Router Interceptor', () => {
     router.destroy();
     router.clear();
     clearContainers();
+    resetBoot();
     globalThis.navigation = originalNavigation;
+    mainEl.remove();
+    mainEl = null;
   });
 
   it('setup() attaches one navigate listener and destroy() removes all listeners', () => {

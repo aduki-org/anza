@@ -13,15 +13,22 @@ import {
 
 describe('Router Container Registry', () => {
   let el;
+  let mainEl;
 
   beforeEach(() => {
+    // Framework requires <main id="main"> in the document.
+    mainEl = document.createElement('main');
+    mainEl.id = 'main';
+    document.body.appendChild(mainEl);
+
     el = document.createElement('div');
     el.id = 'main-content';
-    document.body.appendChild(el);
+    mainEl.appendChild(el);
   });
 
   afterEach(() => {
-    el.remove();
+    mainEl.remove();
+    mainEl = null;
     el = null;
     clearContainers();
   });
@@ -59,7 +66,7 @@ describe('Router Container Registry', () => {
     }
 
     unregisterContainer('app-main');
-    if (getContainer('app-main') !== null) {
+    if (getContainer('app-main')) {
       throw new Error('Expected app-main to be unregistered');
     }
   });
@@ -82,7 +89,7 @@ describe('Router Container Registry', () => {
     registerContainer('app-main', el);
     clearContainers();
 
-    if (getContainer('app-main') !== null) {
+    if (getContainer('app-main')) {
       throw new Error('Expected container map to be empty after clearContainers');
     }
   });

@@ -9,7 +9,7 @@
  * Source: tasks.md Phase 5
  */
 
-import { get, element as resolve, root } from './graph.js';
+import { get, element as resolve } from './graph.js';
 import { path } from './lca.js';
 
 /** Yields one frame so a freshly-connected element can register itself. */
@@ -23,10 +23,10 @@ function frame() {
  * containers from the deepest currently-mounted ancestor downward.
  *
  * @param {string} target - container name that must end up in the DOM.
- * @param {string} [current='body'] - the source container to path from.
+ * @param {string} [current='main'] - the source container to path from.
  * @returns {Promise<Element|null>} the resolved target element.
  */
-export async function ensure(target, current = 'body') {
+export async function ensure(target, current = 'main') {
   // Already mounted — nothing to do.
   const live = resolve(target);
   if (live) return live;
@@ -41,13 +41,13 @@ export async function ensure(target, current = 'body') {
     if (el && el.isConnected) mounted = node;
     else break;
   }
-  if (!mounted) mounted = root;
+  if (!mounted) mounted = get('main');   // fall back to the graph root
 
   // Mount sequentially from the first unmounted node down to the target.
   const start = segments.indexOf(mounted) + 1;
   for (let i = start; i < segments.length; i++) {
     const node = segments[i];
-    const parentEl = node.parent?.ref?.deref() ?? (node.parent === root ? document.body : null);
+    const parentEl = node.parent?.ref?.deref() ?? null;
     if (!parentEl || !parentEl.isConnected) {
       throw new Error(`CascadeError: parent '${node.parent?.name}' is disconnected while mounting '${node.name}'`);
     }

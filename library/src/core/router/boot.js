@@ -6,8 +6,13 @@
  * has resolved. This is what makes a hard refresh on a deep route work: the
  * first match no longer races ahead of element registration.
  *
- * Source: tasks.md Phase 1
+ * Source: tasks.md Phase 1 / Migration 2
  */
+
+import { root as graphRoot } from './graph.js';
+import { registerContainer } from './container.js';
+
+const ROOT = 'main';
 
 // Outstanding prerequisites the initial match must wait for.
 const gates = new Set();
@@ -35,6 +40,23 @@ export function gate(promise) {
 }
 
 /**
+ * Wires <main id="main"> into the graph. Must be called after DOMContentLoaded
+ * so the element is guaranteed to exist. Throws a hard error if absent —
+ * there is no body fallback.
+ */
+function anchor() {
+  const el = document.getElementById('main');
+  if (!el) {
+    throw new Error(
+      `[Router] <main id="main"> is required but was not found in the document. ` +
+      `Ensure your HTML shell contains exactly one <main id="main"> before any scripts run.`
+    );
+  }
+  graphRoot.ref = new WeakRef(el);
+  registerContainer(ROOT, el, null);   // null parent — root has no parent
+}
+
+/**
  * Fires the initial route match once the document is interactive and all gates
  * have settled. Idempotent — only the first call wins.
  *
@@ -46,6 +68,9 @@ export function boot(emitFn) {
 
   const launch = async () => {
     if (booted) return;
+
+    anchor();   // 1. wire main#main into the graph — must be first
+
     // Snapshot current gates; settle them all (failures are non-fatal — a
     // single element that fails to define must not wedge the whole router).
     const pending = Array.from(gates);
@@ -55,7 +80,7 @@ export function boot(emitFn) {
     booted = true;
     const fn = trigger;
     trigger = null;
-    if (fn) await fn();
+    if (fn) await fn();   // 3. first match + emit
   };
 
   if (typeof document !== 'undefined' && document.readyState === 'loading') {
@@ -79,4 +104,5 @@ export function reset() {
   gates.clear();
   booted = false;
   trigger = null;
+  graphRoot.ref = null;   // invalidate the WeakRef so anchor() re-queries on next boot
 }

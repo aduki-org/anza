@@ -19,6 +19,16 @@ let guards = [];
 let notFoundHandler = null;
 let ready = false;
 
+// Module-level root slots — captured once in setup(), cleared in destroy().
+let win   = null;
+let shell = null;   // WeakRef<HTMLElement> — points to <main id="main">
+
+/** Returns the live <main id="main"> element, or null if GC'd. */
+export function getShell() { return shell?.deref() ?? null; }
+
+/** Returns the captured window reference. */
+export function getWin()   { return win; }
+
 // Navigation API listener references for teardown
 let navListener = null;
 let successListener = null;
@@ -110,6 +120,13 @@ export function setup() {
   if (typeof window === 'undefined' || !window.navigation) return;
   ready = true;
 
+  win   = window;
+  const mainEl = document.getElementById('main');
+  // Only wrap in WeakRef when the element exists. setup() may be called at
+  // module-evaluation time (before DOMContentLoaded), so the element may not
+  // be in the DOM yet. anchor() in boot.js is the authoritative check that
+  // throws if the element is absent at boot time.
+  if (mainEl) shell = new WeakRef(mainEl);
   navListener = (event) => {
     // Skip cross-origin navigations, file downloads, or same-document hash scrolls
     if (!event.canIntercept || event.hashChange || event.downloadRequest) {
@@ -163,7 +180,7 @@ export function setup() {
           try {
             for (let i = 0; i < chain.length; i++) {
               if (!getContainer(chain[i])) {
-                await ensure(chain[i], chain[i - 1] ?? 'body');
+                await ensure(chain[i], chain[i - 1] ?? 'main');   // was 'body'
               }
             }
           } catch (err) {
@@ -289,7 +306,8 @@ export function setup() {
 export function destroy() {
   if (!ready) return;
   ready = false;
-
+  win   = null;
+  shell = null;
   if (typeof window !== 'undefined' && window.navigation) {
     if (navListener) window.navigation.removeEventListener('navigate', navListener);
     if (successListener) window.navigation.removeEventListener('navigatesuccess', successListener);

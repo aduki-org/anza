@@ -7,7 +7,8 @@
  *
  * Every node holds a WeakRef to its element so an unmounted container can be
  * garbage-collected without a manual unregister. A FinalizationRegistry prunes
- * stale nodes. The virtual root 'body' always exists.
+ * stale nodes. The virtual root 'main' always exists; its WeakRef is filled in
+ * by boot.js anchor() once <main id="main"> is live in the DOM.
  *
  * Source: tasks.md Phase 3
  */
@@ -28,8 +29,13 @@ class Node {
 }
 
 const nodes = new Map();
-const root = new Node('body', null, null);
-nodes.set('body', root);
+
+// The permanent root node. ref is null at module-evaluation time because
+// modules may be evaluated before the parser reaches <main id="main">.
+// boot.js fills in the WeakRef during anchor().
+const root = new Node('main', null, null);
+root.depth = 0;
+nodes.set('main', root);
 
 // Explicit unregistrations. element() returns undefined for a name in this set
 // so a just-unmounted container is not confused with a GC'd one (RT bug 8.2).
@@ -61,14 +67,20 @@ function detach(name) {
  *
  * @param {string} name - unique registry key.
  * @param {Element} el - the container element.
- * @param {string} [parent='body'] - parent registry key.
+ * @param {string} [parent='main'] - parent registry key.
  * @returns {Node} the inserted node.
  */
-export function add(name, el, parent = 'body') {
+export function add(name, el, parent = 'main') {
   gone.delete(name);
 
   const existing = nodes.get(name);
-  if (existing && existing !== root) {
+  if (existing) {
+    if (existing === root) {
+      // Root re-registration from anchor(): refresh the WeakRef and return.
+      // The root cannot be reparented and must not spawn a duplicate node.
+      existing.ref = new WeakRef(el);
+      return existing;
+    }
     const prev = existing.ref?.deref();
     if (prev && prev !== el) {
       throw new Error(`ContainerError: Singleton violation — '${name}' is already mounted. A second instance cannot register while the first is active.`);
@@ -138,7 +150,8 @@ export function clear() {
   nodes.clear();
   root.children.clear();
   gone.clear();
-  nodes.set('body', root);
+  root.ref = null;           // reset the WeakRef so anchor() re-queries on next boot
+  nodes.set('main', root);   // root is 'main'; 'body' has no special status
 }
 
 export { Node, root };

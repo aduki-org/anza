@@ -26,11 +26,14 @@ function ensureObserver() {
 
   const attach = () => {
     if (observer) return;
+    const root = document.getElementById('main');
+    if (!root) return;   // framework root absent — nothing to observe
+
     observer = new MutationObserver(() => {
       let stillWaiting = false;
       for (const selector of observedSelectors) {
         if (!graphElement(selector)) {
-          const el = document.querySelector(selector);
+          const el = root.querySelector(selector);   // scope to root, not document
           if (el) registerContainer(selector, el);
           else stillWaiting = true;
         }
@@ -40,7 +43,8 @@ function ensureObserver() {
         observer = null;
       }
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+
+    observer.observe(root, { childList: true, subtree: true });
   };
 
   if (typeof requestIdleCallback !== 'undefined') {
@@ -55,9 +59,10 @@ function ensureObserver() {
  *
  * @param {string} name - unique registry key (or CSS selector).
  * @param {HTMLElement} element - the DOM element instance.
- * @param {string} [parent='body'] - parent container key in the graph.
+ * @param {string|null} [parent='main'] - parent container key in the graph.
+ *   Pass null explicitly when registering the root (no parent).
  */
-export function registerContainer(name, element, parent = 'body') {
+export function registerContainer(name, element, parent = 'main') {
   add(name, element, parent);
 }
 
@@ -86,8 +91,9 @@ export function getContainer(name) {
   if (el) return el;
 
   if (isSelector(name) && typeof document !== 'undefined') {
+    const root = document.getElementById('main');
     try {
-      el = document.querySelector(name);
+      el = root ? root.querySelector(name) : null;
       if (el) {
         registerContainer(name, el);
         return el;
@@ -100,15 +106,16 @@ export function getContainer(name) {
     return el ?? undefined;
   }
 
-  // Warn when a plain key shadows a real DOM element of the same tag name.
+  // Warn when a plain key shadows a real DOM element inside the root.
   if (typeof name === 'string' && typeof document !== 'undefined') {
+    const root = document.getElementById('main');
     let queryResult = null;
-    try { queryResult = document.querySelector(name); } catch (_) {}
+    try { queryResult = root?.querySelector(name) ?? null; } catch (_) {}
     if (queryResult) {
       console.warn(
-        `[Router] Container name "${name}" is ambiguous: it exists in the DOM as a selector ` +
-        `but is being treated as a registry key. Use a selector prefix (e.g., "#${name}") ` +
-        `to explicitly target the DOM element, or ensure it is registered via registerContainer().`
+        `[Router] Container name "${name}" matches a DOM element inside <main id="main"> ` +
+        `but is being treated as a registry key. ` +
+        `Use a selector prefix or register it via registerContainer().`
       );
     }
   }

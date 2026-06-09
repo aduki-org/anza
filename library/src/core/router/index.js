@@ -13,7 +13,8 @@ import {
   setup, destroy,
   addGuard, setNotFound,
   guardsApi, missApi,
-  on, nav, registerNavigator
+  on, nav, registerNavigator,
+  getShell, getWin
 } from './intercept.js';
 import {
   navigate,
@@ -103,7 +104,12 @@ export const router = {
 
   // Lifecycle
   setup,
-  destroy
+  destroy,
+
+  // Root accessors — useful for components that need the shell element
+  // without importing intercept directly.
+  shell: getShell,   // router.shell() → <main id="main">
+  win:   getWin      // router.win()   → window
 };
 
 // Auto-bootstrap client-side navigation listeners on client load
