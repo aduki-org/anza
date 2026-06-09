@@ -16,6 +16,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.2] — 2026-06-09
+
+### Added
+
+- CI/CD workflows for GitHub Actions (build, typecheck, verify scaffolding, cross-platform release)
+- Comprehensive documentation for all modules (animations, api, events, platform, router, security, state, storage, sw, ui, workers)
+- `library/bin/` CLI wrappers for Node.js distribution
+
+---
+
 ## [0.2.1] — 2026-06-09
 
 ### Added
