@@ -1,6 +1,6 @@
 # Structure
 
-When you run `npx anza-create myapp`, the scaffold generates a folder layout the CLI expects. Here is what each file and folder does.
+When you run `npm create @adukiorg/anza myapp`, the scaffold generates a folder layout the CLI expects. Here is what each file and folder does.
 
 ---
 
@@ -31,7 +31,7 @@ When you run `npx anza-create myapp`, the scaffold generates a folder layout the
 
 ---
 
-## What `anza create` Generates
+## What `npm create @adukiorg/anza` Generates
 
 ### `src/app.js`
 

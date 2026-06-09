@@ -13,7 +13,7 @@ Install the library, scaffold your first app, and understand the project layout.
 | File | What It Covers |
 | ------ | -------------- |
 | [intro/install.md](intro/install.md) | Install the npm package and build the Rust CLI |
-| [intro/start.md](intro/start.md) | Scaffold your first app with `anza create` |
+| [intro/start.md](intro/start.md) | Scaffold your first app with `npm create @adukiorg/anza` |
 | [intro/build.md](intro/build.md) | Dev server, production build, and diagnostics |
 | [intro/structure.md](intro/structure.md) | Project folder conventions and what each file does |
 

@@ -7,7 +7,7 @@ Create a new Anza app and run it.
 ## Scaffold
 
 ```bash
-npx anza-create myapp
+npm create @adukiorg/anza myapp
 cd myapp
 npm install
 ```

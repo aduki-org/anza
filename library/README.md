@@ -47,7 +47,7 @@ The Rust CLI (`anza`) resolves your ESM import graph and copies only the modules
 ## Quick Start
 
 ```bash
-npx anza-create myapp
+npm create @adukiorg/anza myapp
 cd myapp
 npm install
 npm run dev
