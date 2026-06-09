@@ -16,6 +16,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.3] — 2026-06-09
+
+### Fixed
+
+- CI release workflow artifact naming to prevent binary overwrites
+- Windows runner shell compatibility (`shell: bash`)
+
+---
+
 ## [0.2.2] — 2026-06-09
 
 ### Added
