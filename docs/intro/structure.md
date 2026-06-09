@@ -43,7 +43,7 @@ navigator.serviceWorker.register('/dist/sw.js');
 
 dock('main', { parent: 'body' });
 
-import './pages/index/index.js';
+import './pages/index.js';
 ```
 
 This bootstraps the framework, registers the Service Worker, and creates a `main` dock attached to `body`. All pages render through this dock by default.
@@ -85,9 +85,9 @@ self.addEventListener('fetch', (e) => {
 });
 ```
 
-Precaches the app shell and cleans up old caches on update. Static assets use `CacheFirst`; API calls use `NetworkFirst` with a 3-second timeout.
+Pre-caches the app shell and cleans up old caches on update. Static assets use `CacheFirst`; API calls use `NetworkFirst` with a 3-second timeout.
 
-### `src/pages/index/index.js`
+### `src/pages/entry/index.js`
 
 ```javascript
 import { page } from '@adukiorg/anza/ui';
@@ -101,9 +101,19 @@ page('/', {
 
 Defines the `/` route. `via: ['main']` tells the router to mount this page inside the `main` dock. `import.meta.url` makes relative paths resolve from this file.
 
-### `src/pages/index/index.html` and `index.css`
+### `src/pages/entry/index.html` and `index.css`
 
 The markup and styles for the welcome page. They are referenced by the `template` option above. You can delete them and use inline strings instead.
+
+### `src/pages/index.js`
+
+The barrel file. It imports every page folder so `app.js` only needs one import:
+
+```javascript
+import './entry/index.js';
+```
+
+This pattern scales: add a new folder, import it here, and the route registers automatically. The `entry/` name is just a convention. Rename it, replace it, or remove it entirely — whatever defines `/` in this barrel becomes your landing page.
 
 ---
 

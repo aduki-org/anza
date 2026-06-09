@@ -19,9 +19,9 @@ This generates:
 | `src/app.js` | Entry point — imports the UI system and defines a layout dock |
 | `src/index.html` | HTML shell with importmap, tokens, styles, and module script |
 | `src/sw.js` | Service Worker entry — caching, routing, sync |
-| `src/pages/index/index.js` | Welcome page definition |
-| `src/pages/index/index.html` | Welcome page markup |
-| `src/pages/index/index.css` | Welcome page styles |
+| `src/pages/entry/index.js` | Landing page definition |
+| `src/pages/entry/index.html` | Landing page markup |
+| `src/pages/entry/index.css` | Landing page styles |
 | `src/tokens/` | Design tokens copied from the library (colors, spacing, typography) |
 | `src/styles/` | Global styles copied from the library (reset, layers, base) |
 | `importmap.json` | Empty starter for custom aliases |
@@ -60,12 +60,12 @@ navigator.serviceWorker.register('/dist/sw.js');
 // Layout shell
 dock('main', { parent: 'body' });
 
-import './pages/index/index.js';
+import './pages/index.js';
 ```
 
 This initializes the UI system, registers the Service Worker, creates a `main` dock attached to `body`, and loads the welcome page.
 
-### `src/pages/index/index.js`
+### `src/pages/entry/index.js`
 
 ```javascript
 import { page } from '@adukiorg/anza/ui';
@@ -78,6 +78,30 @@ page('/', {
 ```
 
 Defines a route at `/` that renders through the `main` dock, loading its markup and styles from sibling files.
+
+### Customizing the landing page
+
+The `src/pages/entry/` folder is the scaffold default. You can rename it, delete it, or replace it with any folder or files you want. The only requirement is that `src/pages/index.js` imports whatever defines your `/` route.
+
+```javascript
+// src/pages/index.js
+import './entry/index.js';     // default — can rename
+import './home/index.js';      // or call it home
+import './landing/index.js';   // or landing
+```
+
+You can also define the route inline without a separate folder:
+
+```javascript
+// src/pages/index.js
+import { page } from '@adukiorg/anza/ui';
+
+page('/', {
+  tag: 'page-home',
+  via: ['main'],
+  template: '<h1>Home</h1>'
+});
+```
 
 ---
 

@@ -13,7 +13,7 @@ import * as write from './write.js';
 const DIRS = [
   'src',
   'src/pages',
-  'src/pages/index',
+  'src/pages/entry',
   'src/docks',
   'src/views',
   'src/parts',
@@ -56,7 +56,7 @@ navigator.serviceWorker.register('/dist/sw.js');
 dock('main', { parent: 'body' });
 
 // Pages
-import './pages/index/index.js';
+import './pages/index.js';
 `;
 
 const SW = `/**
@@ -86,7 +86,7 @@ self.addEventListener('fetch', (e) => {
 `;
 
 const PAGE = `/**
- * src/pages/index/index.js — welcome page
+ * src/entry/index.js — landing page
  */
 import { page } from '@adukiorg/anza/ui';
 
@@ -95,6 +95,14 @@ page('/', {
   via: ['main'],
   template: { html: './index.html', css: './index.css' }
 }, import.meta.url);
+`;
+
+const BARREL = `/**
+ * src/pages/index.js
+ *
+ * Barrel — imports all app pages.
+ */
+import './entry/index.js';
 `;
 
 const MARKUP = (name) => `<article class="welcome">
@@ -181,9 +189,10 @@ export function run(target, name, library) {
   write.write(join(target, 'src', 'index.html'), HTML(name));
   write.write(join(target, 'src', 'app.js'), APP);
   write.write(join(target, 'src', 'sw.js'), SW);
-  write.write(join(target, 'src', 'pages', 'index', 'index.js'), PAGE);
-  write.write(join(target, 'src', 'pages', 'index', 'index.html'), MARKUP(name));
-  write.write(join(target, 'src', 'pages', 'index', 'index.css'), STYLE);
+  write.write(join(target, 'src', 'pages', 'entry', 'index.js'), PAGE);
+  write.write(join(target, 'src', 'pages', 'entry', 'index.html'), MARKUP(name));
+  write.write(join(target, 'src', 'pages', 'entry', 'index.css'), STYLE);
+  write.write(join(target, 'src', 'pages', 'index.js'), BARREL);
 
   const manifest = JSON.stringify({
     name,

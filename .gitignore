@@ -61,9 +61,6 @@ desktop.ini
 lcov.info
 coverage/
 
-# ── Test scaffold artifacts ───────────────────────────────────────────────────
-web/
-
 # ── Prebuilt CLI binaries (CI staging) ────────────────────────────────────────
 library/bin/anza/anza-*
 

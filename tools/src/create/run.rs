@@ -6,7 +6,7 @@ use super::{copy, find, write};
 const DIRS: &[&str] = &[
   "src",
   "src/pages",
-  "src/pages/index",
+  "src/pages/entry",
   "src/docks",
   "src/views",
   "src/parts",
@@ -49,7 +49,7 @@ navigator.serviceWorker.register('/dist/sw.js');
 dock('main', { parent: 'body' });
 
 // Pages
-import './pages/index/index.js';
+import './pages/index.js';
 "#;
 
 const SW: &str = r#"/**
@@ -79,7 +79,7 @@ self.addEventListener('fetch', (e) => {
 "#;
 
 const PAGE: &str = r#"/**
- * src/pages/index/index.js — welcome page
+ * src/entry/index.js — landing page
  */
 import { page } from '@adukiorg/anza/ui';
 
@@ -88,6 +88,14 @@ page('/', {
   via: ['main'],
   template: { html: './index.html', css: './index.css' }
 }, import.meta.url);
+"#;
+
+const BARREL: &str = r#"/**
+ * src/pages/index.js
+ *
+ * Barrel — imports all app pages.
+ */
+import './entry/index.js';
 "#;
 
 const MARKUP: &str = r#"<article class="welcome">
@@ -187,16 +195,20 @@ pub fn run(target: &Path, name: &str) {
   write::write(target.join("src").join("app.js"), APP);
   write::write(target.join("src").join("sw.js"), SW);
   write::write(
-    target.join("src").join("pages").join("index").join("index.js"),
+    target.join("src").join("pages").join("entry").join("index.js"),
     PAGE,
   );
   write::write(
-    target.join("src").join("pages").join("index").join("index.html"),
+    target.join("src").join("pages").join("entry").join("index.html"),
     &MARKUP.replace("{name}", name),
   );
   write::write(
-    target.join("src").join("pages").join("index").join("index.css"),
+    target.join("src").join("pages").join("entry").join("index.css"),
     STYLE,
+  );
+  write::write(
+    target.join("src").join("pages").join("index.js"),
+    BARREL,
   );
 
   let manifest = format!(

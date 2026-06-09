@@ -17,6 +17,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.7] — 2026-06-09
+
+### Fixed
+
+- Scaffold structure: landing page moved to `src/pages/entry/` instead of `src/pages/index/`
+- Node.js and Rust create commands generate consistent `src/pages/index.js` barrel file
+- Docs conversion task (`tasks/docs.js`) for markdown-to-anza-page generation
+
+---
+
 ## [0.2.6] — 2026-06-09
 
 ### Fixed
