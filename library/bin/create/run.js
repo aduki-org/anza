@@ -22,8 +22,6 @@ const DIRS = [
   'src/styles',
 ];
 
-const MAP = JSON.stringify({ imports: {} }, null, 2) + '\n';
-
 const HTML = (name) => `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -31,7 +29,7 @@ const HTML = (name) => `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${name}</title>
 
-    <script type="importmap" src="/importmap.json"></script>
+    <script type="importmap" src="/dist/importmap.json"></script>
 
     <link rel="stylesheet" href="/dist/tokens/index.css" />
     <link rel="stylesheet" href="/dist/styles/index.css" />
@@ -185,7 +183,6 @@ export function run(target, name, library) {
     }
   }
 
-  write.write(join(target, 'importmap.json'), MAP);
   write.write(join(target, 'src', 'index.html'), HTML(name));
   write.write(join(target, 'src', 'app.js'), APP);
   write.write(join(target, 'src', 'sw.js'), SW);

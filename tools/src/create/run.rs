@@ -15,8 +15,6 @@ const DIRS: &[&str] = &[
   "src/styles",
 ];
 
-const MAP: &str = "{\n  \"imports\": {}\n}\n";
-
 const HTML: &str = r#"<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -24,7 +22,7 @@ const HTML: &str = r#"<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{name}</title>
 
-    <script type="importmap" src="/importmap.json"></script>
+    <script type="importmap" src="/dist/importmap.json"></script>
 
     <link rel="stylesheet" href="/dist/tokens/index.css" />
     <link rel="stylesheet" href="/dist/styles/index.css" />
@@ -187,7 +185,6 @@ pub fn run(target: &Path, name: &str) {
     logs::warn!("Library directory not found; skipping token/style copy.");
   }
 
-  write::write(target.join("importmap.json"), MAP);
   write::write(
     target.join("src").join("index.html"),
     &HTML.replace("{name}", name),

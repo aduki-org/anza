@@ -17,6 +17,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.2.8] — 2026-06-09
+
+### Fixed
+
+- Remove empty `importmap.json` from scaffold — HTML now points to `/dist/importmap.json`
+- Category barrel files for generated doc pages (`docs/*/index.js`)
+- Docs root route (`/docs`) uses `entry/` folder like other pages
+
+---
+
 ## [0.2.7] — 2026-06-09
 
 ### Fixed
