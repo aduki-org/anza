@@ -43,11 +43,11 @@ jobs:
             target: aarch64-unknown-linux-gnu
             binary: anza-linux-arm64
             cross: true
-          - os: macos-13
+          - os: macos-latest
             target: x86_64-apple-darwin
             binary: anza-macos-x64
             cross: false
-          - os: macos-14
+          - os: macos-latest
             target: aarch64-apple-darwin
             binary: anza-macos-arm64
             cross: false
@@ -89,11 +89,17 @@ jobs:
         if: matrix.cross
         run: cd tools && cross build --release --target ${{ matrix.target }}
 
+      - name: Rename binary
+        shell: bash
+        run: |
+          SRC="tools/target/${{ matrix.target }}/release/anza${{ endsWith(matrix.binary, '.exe') && '.exe' || '' }}"
+          DST="tools/target/${{ matrix.binary }}"
+          cp "$SRC" "$DST"
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.binary }}
-          path: tools/target/${{ matrix.target }}/release/anza${{ endsWith(matrix.binary, '.exe') && '.exe' || '' }}
+          path: tools/target/${{ matrix.binary }}
           retention-days: 1
 
   publish:
