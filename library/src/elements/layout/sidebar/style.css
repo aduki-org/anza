@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  background: var(--color-surface-elevated);
+  border-right: var(--space-px) solid var(--color-border-default);
+  height: calc(100vh - var(--space-16));
+  box-sizing: border-box;
+  width: calc(var(--space-16) * 4);
+  transition: width var(--duration-medium) var(--ease-out);
+  position: sticky;
+  top: var(--space-16);
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-6) var(--space-4);
+  box-sizing: border-box;
+  overflow-y: auto;
+  gap: var(--space-6);
+}
+
+/* Collapse styling transformations */
+:host([collapsed]) {
+  width: var(--space-16);
+}
+
+:host([collapsed]) ::slotted(*) {
+  display: none;
+}

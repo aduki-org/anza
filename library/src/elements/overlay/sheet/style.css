@@ -1,0 +1,64 @@
+:host {
+  display: inline-block;
+  font-family: var(--font-family-sans);
+}
+
+dialog {
+  background: var(--color-surface-elevated);
+  border: none;
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-none) var(--radius-none);
+  box-shadow: var(--shadow-2xl);
+  width: 100%;
+  max-width: min(calc(var(--space-32) * 6), 100vw);
+  margin: 0 auto;
+  position: fixed;
+  bottom: 0;
+  box-sizing: border-box;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  transform: translateY(100%);
+  transition: transform var(--duration-medium) var(--ease-out);
+  padding: var(--space-0) var(--space-4) var(--space-4) var(--space-4);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(var(--space-0-5));
+  opacity: 0;
+  transition: opacity var(--duration-medium) var(--ease-out);
+}
+
+/* Drag handle indicator overlays */
+.handle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--space-6);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.handle-line {
+  width: calc(var(--space-8) * 1.5);
+  height: var(--space-1);
+  background: var(--color-border-strong);
+  border-radius: var(--radius-full);
+  opacity: 0.5;
+}
+
+/* Open anim trigger classes */
+dialog.open {
+  transform: translateY(0);
+}
+
+dialog.open::backdrop {
+  opacity: 1;
+}
+
+.content {
+  overflow-y: auto;
+  flex: 1;
+}

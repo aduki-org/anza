@@ -1,0 +1,89 @@
+/**
+ * tests/core/router/container.test.js
+ *
+ * Test suite for router container registry.
+ */
+
+import {
+  registerContainer,
+  unregisterContainer,
+  getContainer,
+  clearContainers
+} from '../../../src/core/router/container.js';
+
+describe('Router Container Registry', () => {
+  let el;
+
+  beforeEach(() => {
+    el = document.createElement('div');
+    el.id = 'main-content';
+    document.body.appendChild(el);
+  });
+
+  afterEach(() => {
+    el.remove();
+    el = null;
+    clearContainers();
+  });
+
+  it('registers and retrieves containers by name', () => {
+    registerContainer('app-main', el);
+    const retrieved = getContainer('app-main');
+
+    if (retrieved !== el) {
+      throw new Error('Expected retrieved container to match registered element');
+    }
+  });
+
+  it('throws on duplicate container registrations', () => {
+    registerContainer('app-main', el);
+    let threw = false;
+
+    try {
+      registerContainer('app-main', document.createElement('div'));
+    } catch (err) {
+      threw = true;
+    }
+
+    if (!threw) {
+      throw new Error('Expected duplicate registration to throw');
+    }
+  });
+
+  it('unregisters container and ignores non-matching element names', () => {
+    registerContainer('app-main', el);
+    unregisterContainer('other');
+
+    if (getContainer('app-main') !== el) {
+      throw new Error('Expected app-main to remain registered');
+    }
+
+    unregisterContainer('app-main');
+    if (getContainer('app-main') !== null) {
+      throw new Error('Expected app-main to be unregistered');
+    }
+  });
+
+  it('resolves active elements via CSS selector fallback', () => {
+    const retrieved = getContainer('#main-content');
+    if (retrieved !== el) {
+      throw new Error('Expected CSS selector fallback to resolve element');
+    }
+  });
+
+  it('ignores invalid query selectors safely and returns null or undefined', () => {
+    const invalid = getContainer(':::invalid-selector');
+    if (invalid) {
+      throw new Error('Expected invalid selector to return falsy value without throwing');
+    }
+  });
+
+  it('clears container registry', () => {
+    registerContainer('app-main', el);
+    clearContainers();
+
+    if (getContainer('app-main') !== null) {
+      throw new Error('Expected container map to be empty after clearContainers');
+    }
+  });
+});

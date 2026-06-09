@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.surface {
+  background: var(--surface-bg);
+  border: var(--space-px) solid var(--surface-border);
+  box-shadow: var(--surface-shadow);
+  border-radius: var(--surface-radius);
+  padding: var(--space-6);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Surface variants mapping to light/dark semantic tokens */
+:host([variant="elevated"]) {
+  --surface-bg:     var(--color-surface-elevated);
+  --surface-border: var(--color-border-default);
+  --surface-shadow: var(--shadow-md);
+  --surface-radius: var(--radius-lg);
+}
+
+:host([variant="flat"]) {
+  --surface-bg:     var(--color-surface-page);
+  --surface-border: var(--color-border-default);
+  --surface-radius: var(--radius-md);
+}

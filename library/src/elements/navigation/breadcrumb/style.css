@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  font-family: var(--font-family-sans);
+}
+
+ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--space-2);
+}
+
+::slotted(ui-link), ::slotted(span), ::slotted(a) {
+  font-size: var(--font-size-sm);
+  color: var(--color-content-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+::slotted(ui-link:last-child), ::slotted(span:last-child), ::slotted(a:last-child) {
+  color: var(--color-content-primary);
+  font-weight: var(--font-weight-medium);
+  pointer-events: none;
+}
+
+/* dynamic separator overlays using CSS content styles */
+::slotted(*:not(:last-child))::after {
+  content: "/";
+  color: var(--color-border-strong);
+  font-weight: var(--font-weight-regular);
+  margin-left: var(--space-2);
+}

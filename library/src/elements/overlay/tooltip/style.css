@@ -1,0 +1,41 @@
+:host {
+  display: inline-flex;
+  position: relative;
+}
+
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, var(--space-0));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: var(--color-surface-inverse);
+  color: var(--color-content-inverse);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-sans);
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out),
+    visibility var(--duration-fast) var(--ease-out);
+  z-index: 1000;
+}
+
+/* Hover and focus triggers */
+.wrapper:hover .tooltip,
+.wrapper:focus-within .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, calc(-1 * var(--space-2)));
+}

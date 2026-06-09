@@ -1,0 +1,63 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-sans);
+  cursor: pointer;
+  user-select: none;
+  /* Component Tokens — Semantic Reference Only */
+  --switch-bg:           var(--color-border-strong);
+  --switch-bg-on:        var(--color-interactive);
+  --switch-thumb-color:  var(--color-content-inverse);
+  --switch-width:        var(--space-10);
+  --switch-height:       var(--space-6);
+  --switch-thumb-size:   calc(var(--switch-height) - var(--space-1));
+}
+
+.track {
+  width: var(--switch-width);
+  height: var(--switch-height);
+  background: var(--switch-bg);
+  border-radius: var(--radius-full);
+  position: relative;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+:host(:focus-visible) .track {
+  box-shadow: 0 0 0 var(--space-0-5) var(--color-border-focus);
+}
+
+/* Moving thumb circular handle design */
+.thumb {
+  width: var(--switch-thumb-size);
+  height: var(--switch-thumb-size);
+  background: var(--switch-thumb-color);
+  border-radius: var(--radius-full);
+  position: absolute;
+  top: var(--space-0-5);
+  left: var(--space-0-5);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+:host(:state(on)) .track {
+  background: var(--switch-bg-on);
+}
+
+:host(:state(on)) .thumb {
+  transform: translateX(calc(var(--switch-width) - var(--switch-thumb-size) - var(--space-1)));
+}
+
+:host(:state(disabled)) {
+  cursor: not-allowed;
+  color: var(--color-content-disabled);
+}
+
+:host(:state(disabled)) .track {
+  background: var(--color-interactive-disabled);
+  opacity: 0.6;
+}

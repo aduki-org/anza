@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  background: var(--color-surface-elevated);
+  border-bottom: var(--space-px) solid var(--color-border-default);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--space-16);
+  padding: 0 var(--space-6);
+  box-sizing: border-box;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}

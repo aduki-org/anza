@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  font-family: var(--font-family-sans);
+}
+
+.toast {
+  background: var(--color-surface-inverse);
+  color: var(--color-content-inverse);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  pointer-events: auto;
+  animation: slideIn var(--duration-medium) var(--ease-out);
+  transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+}
+
+.toast.fade-out {
+  opacity: 0;
+  transform: translateY(var(--space-2));
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-4));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

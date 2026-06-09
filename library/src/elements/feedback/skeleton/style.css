@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  /* Component Tokens — Semantic Reference Only */
+  --skeleton-bg:     var(--color-interactive-disabled);
+  --skeleton-radius: var(--radius-md);
+  --skeleton-width:  100%;
+  --skeleton-height: var(--space-4);
+}
+
+.shimmer {
+  background: var(--skeleton-bg);
+  border-radius: var(--skeleton-radius);
+  width: var(--skeleton-width);
+  height: var(--skeleton-height);
+  box-sizing: border-box;
+}
+
+:host([variant="circle"]) {
+  --skeleton-radius: var(--radius-full);
+  --skeleton-width:  var(--space-12);
+  --skeleton-height: var(--space-12);
+  display: inline-block;
+}
+
+:host([variant="text"]) {
+  --skeleton-height: var(--space-3);
+  --skeleton-width:  75%;
+}

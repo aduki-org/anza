@@ -1,0 +1,21 @@
+:host {
+  display: inline-block;
+  font-family: var(--font-family-sans);
+}
+
+[popover] {
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--color-surface-elevated);
+  border: var(--space-px) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  color: var(--color-content-primary);
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* Popover backdrop overlay styles */
+[popover]::backdrop {
+  background: transparent;
+}

@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  font-family: var(--font-family-sans);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.illustration {
+  margin-bottom: var(--space-4);
+  color: var(--color-content-secondary);
+  display: flex;
+  justify-content: center;
+}
+
+/* Slotted illustration size constraints */
+::slotted(svg), ::slotted(img) {
+  width: calc(var(--space-12) * 2);
+  height: calc(var(--space-12) * 2);
+}
+
+h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-content-primary);
+  margin: 0 0 var(--space-2) 0;
+}
+
+p {
+  font-size: var(--font-size-sm);
+  color: var(--color-content-secondary);
+  max-width: calc(var(--space-32) * 3);
+  margin: 0 0 var(--space-6) 0;
+  line-height: var(--line-height-normal);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+}

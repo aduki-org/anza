@@ -1,0 +1,39 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-family: var(--font-family-sans);
+}
+
+input {
+  background: var(--input-bg);
+  border: var(--space-px) solid var(--input-border);
+  border-radius: var(--input-radius);
+  font-size: var(--input-font-size);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  color: var(--input-text-color);
+  outline: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+input:focus {
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 var(--space-0-5) var(--input-border-focus);
+}
+
+:host(:state(disabled)) input {
+  background: var(--color-interactive-disabled);
+  color: var(--color-content-disabled);
+  cursor: not-allowed;
+}
+
+/* Error indicator slots styling */
+.error-container {
+  font-size: var(--font-size-xs);
+  color: var(--color-feedback-error);
+  min-height: var(--space-4);
+}

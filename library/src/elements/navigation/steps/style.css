@@ -1,0 +1,78 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-family: var(--font-family-sans);
+  position: relative;
+}
+
+/* Connecting background progress line */
+.line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: var(--space-0-5);
+  background: var(--color-border-default);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.line-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--color-interactive);
+  transition: width var(--duration-medium) var(--ease-out);
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+::slotted(ui-step), ::slotted(div[role="step"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Step indicator node circles */
+::slotted(*)::before {
+  content: "";
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-elevated);
+  border: var(--space-px) solid var(--color-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-content-secondary);
+  transition:
+    background-color var(--duration-medium) var(--ease-out),
+    border-color var(--duration-medium) var(--ease-out),
+    color var(--duration-medium) var(--ease-out);
+  box-sizing: border-box;
+  margin-bottom: var(--space-2);
+}
+
+::slotted([state="active"])::before {
+  border-color: var(--color-interactive);
+  color: var(--color-interactive);
+  background: var(--color-surface-page);
+  box-shadow: 0 0 0 var(--space-0-5) var(--color-border-focus);
+}
+
+::slotted([state="completed"])::before {
+  background: var(--color-interactive);
+  border-color: transparent;
+  color: var(--color-content-inverse);
+  content: "✓";
+}

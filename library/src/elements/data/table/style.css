@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: var(--space-px) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+}
+
+/* Target standard table tags distributed into slot */
+::slotted(table) {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-content-primary);
+  text-align: left;
+}
+
+::slotted(thead) {
+  background: var(--color-surface-page);
+  border-bottom: var(--space-px) solid var(--color-border-default);
+}
+
+::slotted(th) {
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-content-secondary);
+  user-select: none;
+}
+
+::slotted(tr) {
+  border-bottom: var(--space-px) solid var(--color-border-default);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+::slotted(tr:last-child) {
+  border-bottom: none;
+}
+
+::slotted(tbody tr:hover) {
+  background: var(--color-interactive-disabled);
+}
+
+::slotted(td) {
+  padding: var(--space-4);
+  vertical-align: middle;
+}

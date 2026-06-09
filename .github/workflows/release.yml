@@ -1,0 +1,145 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  verify:
+    name: Verify version match
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract tag version
+        run: echo "TAG=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+      - name: Read package version
+        run: echo "VERSION=$(jq -r .version library/package.json)" >> "$GITHUB_ENV"
+      - name: Assert match
+        run: |
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag version ($TAG) does not match library/package.json ($VERSION)"
+            exit 1
+          fi
+          echo "Releasing version $VERSION"
+
+  build:
+    name: Build ${{ matrix.binary }}
+    needs: verify
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            binary: anza-linux-x64
+            cross: false
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            binary: anza-linux-arm64
+            cross: true
+          - os: macos-13
+            target: x86_64-apple-darwin
+            binary: anza-macos-x64
+            cross: false
+          - os: macos-14
+            target: aarch64-apple-darwin
+            binary: anza-macos-arm64
+            cross: false
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary: anza-windows-x64.exe
+            cross: false
+          # - os: windows-latest
+          #   target: aarch64-pc-windows-msvc
+          #   binary: anza-windows-arm64.exe
+          #   cross: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            tools/target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-${{ hashFiles('tools/Cargo.lock') }}
+
+      - name: Install cross
+        if: matrix.cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build (native)
+        if: '!matrix.cross'
+        run: cd tools && cargo build --release --target ${{ matrix.target }}
+
+      - name: Build (cross)
+        if: matrix.cross
+        run: cd tools && cross build --release --target ${{ matrix.target }}
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.binary }}
+          path: tools/target/${{ matrix.target }}/release/anza${{ endsWith(matrix.binary, '.exe') && '.exe' || '' }}
+          retention-days: 1
+
+  publish:
+    name: Publish to npm
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: library/bin/anza
+          merge-multiple: true
+
+      - name: Make binaries executable
+        run: chmod +x library/bin/anza/anza-linux-* library/bin/anza/anza-macos-* 2>/dev/null || true
+
+      - name: List staged binaries
+        run: ls -la library/bin/anza/
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+        working-directory: library
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          NOTES=""
+          if [ -f library/CHANGELOG.md ]; then
+            SECTION=$(awk -v ver="## [$VERSION]" '$0 ~ ver {flag=1; next} /^## \[/ {flag=0} flag' library/CHANGELOG.md)
+            if [ -n "$SECTION" ]; then
+              NOTES="$SECTION"
+            fi
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            library/bin/anza/anza-* \
+            --title "anza $VERSION" \
+            --notes "$NOTES" \
+            --generate-notes

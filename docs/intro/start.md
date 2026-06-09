@@ -1,0 +1,98 @@
+# Start
+
+Create a new Anza app and run it.
+
+---
+
+## Scaffold
+
+```bash
+npx anza-create myapp
+cd myapp
+npm install
+```
+
+This generates:
+
+| Path | Purpose |
+| ------ | ------- |
+| `src/app.js` | Entry point — imports the UI system and defines a layout dock |
+| `src/index.html` | HTML shell with importmap, tokens, styles, and module script |
+| `src/sw.js` | Service Worker entry — caching, routing, sync |
+| `src/pages/index/index.js` | Welcome page definition |
+| `src/pages/index/index.html` | Welcome page markup |
+| `src/pages/index/index.css` | Welcome page styles |
+| `src/tokens/` | Design tokens copied from the library (colors, spacing, typography) |
+| `src/styles/` | Global styles copied from the library (reset, layers, base) |
+| `importmap.json` | Empty starter for custom aliases |
+| `package.json` | Scripts: `dev` and `build` |
+
+You own `src/tokens/` and `src/styles/`. The library copies them in as starter files; change them freely.
+
+---
+
+## Run
+
+```bash
+npm run dev
+```
+
+Opens a dev server on `http://localhost:3000` with:
+
+- Import graph resolution into `dist/`
+- Separate `dist/importmap.json` linked from HTML
+- CSS hot-swapping via SSE
+- JS and HTML auto-reload on change
+
+---
+
+## What Was Generated
+
+### `src/app.js`
+
+```javascript
+import '@adukiorg/anza/ui';
+import { dock } from '@adukiorg/anza/ui';
+
+// Register the Service Worker
+navigator.serviceWorker.register('/dist/sw.js');
+
+// Layout shell
+dock('main', { parent: 'body' });
+
+import './pages/index/index.js';
+```
+
+This initializes the UI system, registers the Service Worker, creates a `main` dock attached to `body`, and loads the welcome page.
+
+### `src/pages/index/index.js`
+
+```javascript
+import { page } from '@adukiorg/anza/ui';
+
+page('/', {
+  tag: 'page-welcome',
+  via: ['main'],
+  template: { html: './index.html', css: './index.css' }
+}, import.meta.url);
+```
+
+Defines a route at `/` that renders through the `main` dock, loading its markup and styles from sibling files.
+
+---
+
+## Next
+
+Add a new page:
+
+```javascript
+import { page } from '@adukiorg/anza/ui';
+
+page('/about', {
+  tag: 'page-about',
+  via: ['main'],
+  template: '<h1>About</h1>'
+});
+```
+
+Clicking `<a href="/about">` is intercepted, matched, and swapped inside `main` without a reload.

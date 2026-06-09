@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-rust:
+    name: Build Rust CLI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            tools/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('tools/Cargo.lock') }}
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build release binary
+        run: cd tools && cargo build --release
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: anza-linux-x64
+          path: tools/target/release/anza
+          retention-days: 1
+
+  typecheck-library:
+    name: Typecheck library
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: library/package.json
+      - name: Install dependencies
+        run: cd library && npm ci
+      - name: Typecheck
+        run: cd library && npm run check
+
+  verify-create:
+    name: Verify scaffolding
+    needs: build-rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: anza-linux-x64
+          path: tools/target/release/
+      - name: Locate binary
+        run: |
+          ls -la tools/target/release/
+          chmod +x tools/target/release/anza
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Scaffold test app
+        run: ./tools/target/release/anza create test-scaffold
+      - name: Verify structure
+        run: |
+          ls -la test-scaffold/
+          test -d test-scaffold/src
+          test -d test-scaffold/src/tokens
+          test -d test-scaffold/src/styles
+          test -f test-scaffold/src/app.js
+          test -f test-scaffold/src/index.html
+          test -f test-scaffold/src/sw.js
+      - name: Verify app.js theme init
+        run: grep -q "anza/theme" test-scaffold/src/app.js

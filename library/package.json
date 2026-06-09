@@ -1,0 +1,106 @@
+{
+  "name": "@adukiorg/anza",
+  "version": "0.2.1",
+  "description": "Anza web platform library — reactive state, networking, offline, animations, custom elements. Zero build step. Pure browser ESM.",
+  "author": "fescii",
+  "license": "MIT",
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "homepage": "https://github.com/aduki-org/anza#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aduki-org/anza.git"
+  },
+  "keywords": [
+    "anza",
+    "esm",
+    "web-components",
+    "reactive",
+    "offline",
+    "animations",
+    "no-build",
+    "shadow-dom"
+  ],
+  "bin": {
+    "anza": "./bin/anza/index.js",
+    "anza-create": "./bin/create/index.js"
+  },
+  "files": [
+    "src/",
+    "types/",
+    "importmap.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "bin/"
+  ],
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./api": {
+      "types": "./types/core/api/index.d.ts",
+      "default": "./src/core/api/index.js"
+    },
+    "./state": {
+      "types": "./types/core/state/index.d.ts",
+      "default": "./src/core/state/index.js"
+    },
+    "./events": {
+      "types": "./types/core/events/index.d.ts",
+      "default": "./src/core/events/index.js"
+    },
+    "./router": {
+      "types": "./types/core/router/index.d.ts",
+      "default": "./src/core/router/index.js"
+    },
+    "./storage": {
+      "types": "./types/core/storage/index.d.ts",
+      "default": "./src/core/storage/index.js"
+    },
+    "./offline": {
+      "types": "./types/core/offline/index.d.ts",
+      "default": "./src/core/offline/index.js"
+    },
+    "./animations": {
+      "types": "./types/core/animations/index.d.ts",
+      "default": "./src/core/animations/index.js"
+    },
+    "./workers": {
+      "types": "./types/core/workers/index.d.ts",
+      "default": "./src/core/workers/index.js"
+    },
+    "./security": {
+      "types": "./types/core/security/index.d.ts",
+      "default": "./src/core/security/index.js"
+    },
+    "./platform": {
+      "types": "./types/core/platform/index.d.ts",
+      "default": "./src/core/platform/index.js"
+    },
+    "./ui": {
+      "types": "./types/core/ui/index.d.ts",
+      "default": "./src/core/ui/index.js"
+    },
+    "./defs": {
+      "default": "./src/core/ui/defs/index.js"
+    },
+    "./elements": {
+      "types": "./types/elements/index.d.ts",
+      "default": "./src/elements/index.js"
+    },
+    "./sw": {
+      "default": "./src/sw/index.js"
+    },
+    "./theme": {
+      "types": "./types/core/theme/index.d.ts",
+      "default": "./src/core/theme/index.js"
+    }
+  },
+  "scripts": {
+    "test":  "npx @web/test-runner",
+    "serve": "npx @web/dev-server --port 8080 --node-resolve false",
+    "check": "tsc --noEmit -p tsconfig.json"
+  }
+}

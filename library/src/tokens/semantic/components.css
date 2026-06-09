@@ -1,0 +1,125 @@
+/**
+ * tokens/semantic/components.css
+ *
+ * Semantic component-level design tokens.
+ * Consolidates recurring component-specific tokens from individual elements
+ * into a shared semantic layer for consistency across the design system.
+ */
+
+:root {
+  /* Form Controls */
+  --input-bg:           var(--color-surface-page);
+  --input-border:       var(--color-border-default);
+  --input-border-focus: var(--color-border-focus);
+  --input-radius:       var(--radius-md);
+  --input-font-size:    var(--font-size-base);
+  --input-padding-y:    var(--space-2);
+  --input-padding-x:    var(--space-3);
+  --input-text-color:   var(--color-content-primary);
+
+  --textarea-bg:           var(--color-surface-page);
+  --textarea-border:       var(--color-border-default);
+  --textarea-border-focus: var(--color-border-focus);
+  --textarea-radius:       var(--radius-md);
+  --textarea-font-size:    var(--font-size-base);
+  --textarea-padding-y:    var(--space-2);
+  --textarea-padding-x:    var(--space-3);
+  --textarea-text-color:   var(--color-content-primary);
+
+  --check-bg:           var(--color-surface-page);
+  --check-bg-checked:   var(--color-interactive);
+  --check-border:       var(--color-border-default);
+  --check-border-focus: var(--color-border-focus);
+  --check-radius:       var(--radius-sm);
+  --check-size:         var(--space-5);
+  --check-color:        var(--color-content-inverse);
+
+  --radio-bg:           var(--color-surface-page);
+  --radio-bg-checked:   var(--color-interactive);
+  --radio-border:       var(--color-border-default);
+  --radio-border-focus: var(--color-border-focus);
+  --radio-radius:       var(--radius-full);
+  --radio-size:         var(--space-5);
+  --radio-color:        var(--color-content-inverse);
+
+  --switch-bg:           var(--color-border-strong);
+  --switch-bg-on:        var(--color-interactive);
+  --switch-thumb-color:  var(--color-content-inverse);
+  --switch-width:        var(--space-10);
+  --switch-height:       var(--space-6);
+  --switch-thumb-size:   calc(var(--switch-height) - var(--space-1));
+
+  --select-bg:           var(--color-surface-page);
+  --select-border:       var(--color-border-default);
+  --select-border-focus: var(--color-border-focus);
+  --select-radius:       var(--radius-md);
+  --select-font-size:    var(--font-size-base);
+  --select-padding-y:    var(--space-2);
+  --select-padding-x:    var(--space-3);
+  --select-text-color:   var(--color-content-primary);
+
+  --upload-bg:           var(--color-surface-page);
+  --upload-border:       var(--color-border-default);
+  --upload-border-focus: var(--color-border-focus);
+  --upload-radius:       var(--radius-lg);
+  --upload-padding:      var(--space-8);
+  --upload-color:        var(--color-content-secondary);
+
+  /* Feedback */
+  --alert-radius: var(--radius-md);
+  --alert-bg:     var(--color-surface-elevated);
+  --alert-color:  var(--color-content-primary);
+  --alert-border: var(--color-border-default);
+
+  --skeleton-bg:     var(--color-interactive-disabled);
+  --skeleton-radius: var(--radius-md);
+  --skeleton-width:  100%;
+  --skeleton-height: var(--space-4);
+
+  /* Data Display */
+  --card-radius: var(--radius-lg);
+
+  --stat-label: var(--font-size-xs);
+  --stat-value: var(--font-size-3xl);
+
+  /* Navigation */
+  --link-color:        var(--color-content-link);
+  --link-color-hover:  var(--color-interactive-hover);
+  --link-color-active: var(--color-interactive-active);
+
+  /* Layout */
+  --stack-gap:  var(--space-4);
+
+  --grid-gap:  var(--space-4);
+  --grid-cols: repeat(auto-fit, minmax(250px, 1fr));
+
+  --surface-bg:     var(--color-surface-page);
+  --surface-border: transparent;
+  --surface-shadow: none;
+  --surface-radius: var(--radius-none);
+
+  /* Overlay */
+  --dialog-radius: var(--radius-lg);
+  --dialog-shadow: var(--shadow-2xl);
+
+  --popover-bg:    var(--color-surface-elevated);
+  --popover-border: var(--color-border-default);
+  --popover-shadow: var(--shadow-xl);
+  --popover-radius: var(--radius-md);
+
+  --tooltip-bg:    var(--color-surface-inverse);
+  --tooltip-color: var(--color-content-inverse);
+  --tooltip-radius: var(--radius-sm);
+
+  --menu-bg:       var(--color-surface-elevated);
+  --menu-border:    var(--color-border-default);
+  --menu-shadow:    var(--shadow-lg);
+  --menu-radius:    var(--radius-md);
+
+  --drawer-shadow: var(--shadow-2xl);
+  --drawer-width:  min(calc(var(--space-32) * 3), 85vw);
+
+  --sheet-radius: var(--radius-lg);
+  --sheet-shadow: var(--shadow-2xl);
+  --sheet-max-width: min(calc(var(--space-32) * 6), 100vw);
+}

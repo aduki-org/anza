@@ -1,0 +1,75 @@
+:host {
+  display: block;
+  font-family: var(--font-family-sans);
+  width: 100%;
+  /* Component Tokens — Semantic Reference Only */
+  --alert-radius: var(--radius-md);
+  --alert-bg:     var(--color-surface-elevated);
+  --alert-color:  var(--color-content-primary);
+  --alert-border: var(--color-border-default);
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--alert-bg);
+  color: var(--alert-color);
+  border: var(--space-px) solid var(--alert-border);
+  border-radius: var(--alert-radius);
+  box-sizing: border-box;
+  position: relative;
+}
+
+.body {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+button {
+  background: transparent;
+  border: none;
+  color: currentColor;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+button:hover {
+  opacity: 1;
+}
+
+:host([dismissible]) button {
+  display: inline-flex;
+}
+
+/* Variant mappings using semantic feedback tokens only */
+:host([variant="success"]) {
+  --alert-bg:     var(--color-surface-page);
+  --alert-border: var(--color-feedback-success);
+  --alert-color:  var(--color-content-primary);
+}
+
+:host([variant="warning"]) {
+  --alert-bg:     var(--color-surface-page);
+  --alert-border: var(--color-feedback-warning);
+  --alert-color:  var(--color-content-primary);
+}
+
+:host([variant="error"]) {
+  --alert-bg:     var(--color-surface-page);
+  --alert-border: var(--color-feedback-error);
+  --alert-color:  var(--color-content-primary);
+}
+
+:host([variant="info"]) {
+  --alert-bg:     var(--color-surface-page);
+  --alert-border: var(--color-feedback-info);
+  --alert-color:  var(--color-content-primary);
+}

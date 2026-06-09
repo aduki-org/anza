@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  gap: var(--grid-gap);
+  width: 100%;
+  box-sizing: border-box;
+}

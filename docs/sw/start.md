@@ -1,0 +1,115 @@
+# Start
+
+Write a Service Worker that caches your shell and intercepts API calls.
+
+---
+
+## 1. Create `src/sw.js`
+
+The scaffold generates this file for you. Here is what it contains:
+
+```javascript
+import { precache, router, CacheFirst, NetworkFirst, pruneStale, claim } from '@adukiorg/anza/sw';
+
+const SHELL = 'shell-v1';
+const API = 'api-v1';
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(precache(SHELL, ['/dist/index.html', '/dist/app.js', '/dist/tokens/index.css', '/dist/styles/index.css']));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(Promise.all([pruneStale(SHELL), claim()]));
+});
+
+const r = router();
+r.register('/dist/*', new CacheFirst(SHELL));
+r.register('/api/*', new NetworkFirst(API, { timeout: 3000 }));
+
+self.addEventListener('fetch', (e) => {
+  if (r.handle(e)) return;
+  e.respondWith(fetch(e.request));
+});
+```
+
+What it does:
+
+1. On `install`, precaches the app shell into a cache named `shell-v1`
+2. On `activate`, deletes old caches and claims all tabs
+3. Registers two routes: static assets get `CacheFirst`, API calls get `NetworkFirst` with a 3-second timeout
+4. On `fetch`, tries the router first; unmatched requests fall through to the network
+
+---
+
+## 2. Register from `app.js`
+
+```javascript
+import '@adukiorg/anza/ui';
+import { dock } from '@adukiorg/anza/ui';
+
+// Register the Service Worker
+navigator.serviceWorker.register('/dist/sw.js');
+
+// Layout shell
+dock('main', { parent: 'body' });
+
+// Pages
+import './pages/index/index.js';
+```
+
+`navigator.serviceWorker.register('/dist/sw.js')` starts the SW. The browser resolves the path relative to the page origin, so `/dist/sw.js` is correct.
+
+---
+
+## 3. Send Messages from the Main Thread
+
+Use the offline bridge to send tasks to the active SW:
+
+```javascript
+import { offline } from '@adukiorg/anza/offline';
+
+offline.send('sync', { action: 'flush-queue' });
+```
+
+The SW receives this via `message` events. The bridge handles the response as a Promise.
+
+---
+
+## 4. Build Output
+
+After `npm run build`:
+
+```text
+dist/
+  sw.js              # Your entry — rewritten to use relative imports
+  sw/
+    index.js         # Re-exports from the library
+    strategies.js    # Caching strategy classes
+    routes.js        # URLPattern router
+    install.js       # Precache helpers
+    activate.js      # Lifecycle cleanup
+    expire.js        # TTL pruning
+    queue.js         # Request serialization
+    sync.js          # Background replay
+    push.js          # Web Push helpers
+```
+
+The build tool copied these from `library/src/sw/` and rewrote bare specifiers in `dist/sw.js` to relative paths like `./sw/index.js`.
+
+---
+
+## Next
+
+Add background sync to replay failed mutations:
+
+```javascript
+import { replayQueue } from '@adukiorg/anza/sw';
+
+self.addEventListener('sync', (e) => {
+  if (e.tag === 'sync-tasks') {
+    e.waitUntil(replayQueue());
+  }
+});
+```
+
+Read [sync.md](sync.md) for the full queue API.

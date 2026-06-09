@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  font-family: var(--font-family-sans);
+  width: 100%;
+}
+
+label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-content-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-0-5);
+}
+
+.required-marker {
+  color: var(--color-feedback-error);
+  font-weight: var(--font-weight-bold);
+  display: none;
+}
+
+:host([required]) .required-marker {
+  display: inline;
+}
+
+.hint-box {
+  font-size: var(--font-size-xs);
+  color: var(--color-content-secondary);
+}
+
+.control-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.error-box {
+  font-size: var(--font-size-xs);
+  color: var(--color-feedback-error);
+  min-height: var(--space-4);
+}

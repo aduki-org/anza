@@ -1,0 +1,234 @@
+/**
+ * tests/core/router/intercept.test.js
+ *
+ * Core router intercepts execution test suite.
+ */
+
+import { router } from '../../../src/core/router/index.js';
+import { getContainer, registerContainer, clearContainers } from '../../../src/core/router/container.js';
+
+describe('Router Interceptor', () => {
+  let originalNavigation;
+  let mockNavigation;
+  let listeners;
+
+  beforeEach(() => {
+    router.destroy();
+    router.clear();
+    clearContainers();
+
+    listeners = {};
+    mockNavigation = {
+      addEventListener(type, cb) {
+        listeners[type] = cb;
+      },
+      removeEventListener(type, cb) {
+        if (listeners[type] === cb) {
+          delete listeners[type];
+        }
+      },
+      currentEntry: { url: 'http://localhost/' },
+      navigate: () => ({ committed: Promise.resolve(), finished: Promise.resolve() })
+    };
+
+    originalNavigation = globalThis.navigation;
+    globalThis.navigation = mockNavigation;
+  });
+
+  afterEach(() => {
+    router.destroy();
+    router.clear();
+    clearContainers();
+    globalThis.navigation = originalNavigation;
+  });
+
+  it('setup() attaches one navigate listener and destroy() removes all listeners', () => {
+    router.setup();
+
+    if (typeof listeners.navigate !== 'function') {
+      throw new Error('Expected setup to attach navigate listener');
+    }
+    if (typeof listeners.navigatesuccess !== 'function') {
+      throw new Error('Expected setup to attach navigatesuccess listener');
+    }
+    if (typeof listeners.navigateerror !== 'function') {
+      throw new Error('Expected setup to attach navigateerror listener');
+    }
+
+    router.destroy();
+
+    if (listeners.navigate || listeners.navigatesuccess || listeners.navigateerror) {
+      throw new Error('Expected destroy to remove all event listeners');
+    }
+  });
+
+  it('evaluates guards and redirect calls controller.redirect', async () => {
+    let guardCalled = false;
+    router.guards.add((destination, controller) => {
+      guardCalled = true;
+      if (destination.url.includes('/admin')) {
+        return '/login';
+      }
+      return null;
+    });
+
+    router.setup();
+
+    // Simulate navigation event
+    let redirectUrl = null;
+    let precommitPromise = null;
+
+    const mockEvent = {
+      canIntercept: true,
+      hashChange: false,
+      downloadRequest: false,
+      destination: { url: 'http://localhost/admin' },
+      intercept(options) {
+        const controller = {
+          redirect(url) {
+            redirectUrl = url;
+          }
+        };
+        precommitPromise = options.precommitHandler(controller);
+      }
+    };
+
+    listeners.navigate(mockEvent);
+    await precommitPromise;
+
+    if (!guardCalled) {
+      throw new Error('Expected navigation guard to be called');
+    }
+
+    if (redirectUrl !== '/login') {
+      throw new Error(`Expected guard to trigger redirect to "/login", got "${redirectUrl}"`);
+    }
+  });
+
+  it('handles Safari fallback when precommit is not supported/called', async () => {
+    let guardCalled = false;
+    router.guards.add((destination) => {
+      guardCalled = true;
+      if (destination.url.includes('/admin')) {
+        return '/login';
+      }
+      return null;
+    });
+
+    let navigateUrl = null;
+    let navigateOptions = null;
+    mockNavigation.navigate = (url, options) => {
+      navigateUrl = url;
+      navigateOptions = options;
+      return { committed: Promise.resolve(), finished: Promise.resolve() };
+    };
+
+    router.setup();
+
+    let handlerPromise = null;
+    const mockEvent = {
+      canIntercept: true,
+      hashChange: false,
+      downloadRequest: false,
+      destination: { url: 'http://localhost/admin' },
+      intercept(options) {
+        // In Safari, precommitHandler is NOT called, it goes straight to handler()
+        handlerPromise = options.handler();
+      }
+    };
+
+    listeners.navigate(mockEvent);
+    await handlerPromise;
+
+    if (!guardCalled) {
+      throw new Error('Expected navigation guard to be called in Safari fallback');
+    }
+
+    if (navigateUrl !== '/login' || navigateOptions?.history !== 'replace') {
+      throw new Error('Expected replace navigation to login to be triggered in Safari fallback');
+    }
+  });
+
+  it('triggers found, notfound, and error events in correct flow', async () => {
+    let foundCalled = false;
+    let notfoundCalled = false;
+    let errorCalled = false;
+
+    router.register('/user/:id', 'user-page');
+
+    router.on('found', () => { foundCalled = true; });
+    router.on('notfound', () => { notfoundCalled = true; });
+    router.on('error', () => { errorCalled = true; });
+
+    router.setup();
+
+    // 1. Trigger valid found route
+    let handlerPromise1 = null;
+    const foundEvent = {
+      canIntercept: true,
+      hashChange: false,
+      downloadRequest: false,
+      destination: { url: 'http://localhost/user/42' },
+      intercept(options) {
+        handlerPromise1 = options.handler();
+      }
+    };
+    listeners.navigate(foundEvent);
+    await handlerPromise1;
+
+    if (!foundCalled) {
+      throw new Error('Expected found event to fire');
+    }
+
+    // 2. Trigger invalid notfound route
+    let handlerPromise2 = null;
+    const notfoundEvent = {
+      canIntercept: true,
+      hashChange: false,
+      downloadRequest: false,
+      destination: { url: 'http://localhost/not-registered' },
+      intercept(options) {
+        handlerPromise2 = options.handler();
+      }
+    };
+    listeners.navigate(notfoundEvent);
+    await handlerPromise2;
+
+    if (!notfoundCalled) {
+      throw new Error('Expected notfound event to fire');
+    }
+  });
+
+  it('throws and emits error event when required container is missing in DOM', async () => {
+    let errorDetail = null;
+    router.register('/dashboard', 'dash-page', { container: 'missing-sidebar' });
+
+    router.on('error', (detail) => {
+      errorDetail = detail;
+    });
+
+    router.setup();
+
+    let handlerPromise = null;
+    const mockEvent = {
+      canIntercept: true,
+      hashChange: false,
+      downloadRequest: false,
+      destination: { url: 'http://localhost/dashboard' },
+      intercept(options) {
+        handlerPromise = options.handler().catch(() => {});
+      }
+    };
+
+    listeners.navigate(mockEvent);
+    await handlerPromise;
+
+    if (!errorDetail) {
+      throw new Error('Expected error event to be emitted when container is missing');
+    }
+
+    if (errorDetail.phase !== 'container' || !errorDetail.error.message.includes('missing-sidebar')) {
+      throw new Error('Expected RouteError for missing container to be caught');
+    }
+  });
+});

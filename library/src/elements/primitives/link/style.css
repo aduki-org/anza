@@ -1,0 +1,40 @@
+/* src/elements/primitives/link/style.css */
+
+:host {
+  display: inline-flex;
+}
+
+a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--link-color);
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+a:hover {
+  color: var(--link-color-hover);
+  text-decoration: underline;
+}
+
+a:active {
+  color: var(--link-color-active);
+}
+
+a:focus-visible {
+  outline: var(--space-0-5) solid var(--color-border-focus);
+  outline-offset: var(--space-0-5);
+  border-radius: var(--radius-sm);
+}
+
+/* External links indicator styling */
+.external-icon {
+  width: 0.85em;
+  height: 0.85em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}

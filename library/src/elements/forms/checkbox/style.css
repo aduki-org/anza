@@ -1,0 +1,86 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-sans);
+  cursor: pointer;
+  user-select: none;
+  /* Component Tokens — Semantic Reference Only */
+  --check-bg:           var(--color-surface-page);
+  --check-bg-checked:   var(--color-interactive);
+  --check-border:       var(--color-border-default);
+  --check-border-focus: var(--color-border-focus);
+  --check-radius:       var(--radius-sm);
+  --check-size:         var(--space-5);
+  --check-color:        var(--color-content-inverse);
+}
+
+.box {
+  width: var(--check-size);
+  height: var(--check-size);
+  background: var(--check-bg);
+  border: var(--space-px) solid var(--check-border);
+  border-radius: var(--check-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  outline: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+:host(:focus-visible) .box {
+  border-color: var(--check-border-focus);
+  box-shadow: 0 0 0 var(--space-0-5) var(--color-border-focus);
+}
+
+/* Checkmark indicators sizing */
+svg {
+  width: 80%;
+  height: 80%;
+  fill: none;
+  stroke: var(--check-color);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: none;
+}
+
+.dash {
+  width: 50%;
+  height: var(--space-0-5);
+  background: var(--check-color);
+  border-radius: var(--radius-none);
+  display: none;
+}
+
+:host(:state(checked)) .box {
+  background: var(--check-bg-checked);
+  border-color: transparent;
+}
+
+:host(:state(checked)) svg {
+  display: block;
+}
+
+:host(:state(indeterminate)) .box {
+  background: var(--check-bg-checked);
+  border-color: transparent;
+}
+
+:host(:state(indeterminate)) .dash {
+  display: block;
+}
+
+:host(:state(disabled)) {
+  cursor: not-allowed;
+  color: var(--color-content-disabled);
+}
+
+:host(:state(disabled)) .box {
+  background: var(--color-interactive-disabled);
+  border-color: var(--color-border-default);
+}
