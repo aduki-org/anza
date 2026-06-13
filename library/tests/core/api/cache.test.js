@@ -281,4 +281,67 @@ describe('API Prefix, Cache, and Events Engine', () => {
       }
     });
   });
+
+  describe('State Hydration & Interception', () => {
+    beforeEach(() => {
+      const existing = document.getElementById('anza-state');
+      if (existing) existing.remove();
+      api.sync();
+    });
+
+    afterEach(() => {
+      const existing = document.getElementById('anza-state');
+      if (existing) existing.remove();
+      api.sync();
+    });
+
+    it('should fall back to empty state when #anza-state is missing', () => {
+      const state = api.state();
+      if (!state || Object.keys(state).length !== 0) {
+        throw new Error('Expected empty state when element is missing');
+      }
+    });
+
+    it('should correctly parse state metadata and intercept matching GET requests', async () => {
+      const script = document.createElement('script');
+      script.id = 'anza-state';
+      script.type = 'application/json';
+      
+      const payload = {
+        "https://api.example.com/hydrated": { "data": "hydrated-value" },
+        "__route": {
+          "url": "/hydrated",
+          "params": { "id": "123" },
+          "query": {}
+        }
+      };
+      
+      script.textContent = JSON.stringify(payload);
+      document.head.appendChild(script);
+
+      // Manually trigger sync
+      api.sync();
+
+      // Verify state metadata
+      const state = api.state();
+      if (state.url !== '/hydrated' || state.params.id !== '123') {
+        throw new Error(`Expected route parameters mismatch, got: ${JSON.stringify(state)}`);
+      }
+
+      // Intercept GET requests synchronously
+      let fetchCalled = false;
+      globalThis.fetch = async () => {
+        fetchCalled = true;
+        return new Response('Should not be called', { status: 500 });
+      };
+
+      const result = await api.get('https://api.example.com/hydrated');
+      if (fetchCalled) {
+        throw new Error('Expected API request to be intercepted and not hit fetch');
+      }
+      if (result.data !== 'hydrated-value') {
+        throw new Error(`Expected cached data, got: ${JSON.stringify(result)}`);
+      }
+    });
+  });
 });

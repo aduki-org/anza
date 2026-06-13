@@ -2,7 +2,7 @@
 //
 // Native Rust implementation of `anza create <name>`.
 
-mod copy;
+pub mod copy;
 mod find;
 mod run;
 mod write;

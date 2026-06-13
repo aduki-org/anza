@@ -84,7 +84,7 @@ What makes the router fast and correct. You do not call these directly unless yo
 import { page, dock } from '@adukiorg/anza/defs';
 
 // A persistent container shell
-dock('main', { parent: 'body' });
+dock('main');
 
 // A route that renders through 'main'
 page('/', {

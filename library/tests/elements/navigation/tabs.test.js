@@ -6,7 +6,7 @@
  * Source: plan.md Phase 6-A, elements/navigation/tabs.js
  */
 
-import '../../../src/elements/navigation/tabs.js';
+import '../../../src/elements/navigation/tabs/index.js';
 
 describe('<ui-tabs> TabPanel Component', () => {
   let tabs;

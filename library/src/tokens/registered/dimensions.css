@@ -9,19 +9,19 @@
 @property --space-4 {
   syntax: '<length>';
   inherits: true;
-  initial-value: 1rem;
+  initial-value: 16px;
 }
 
 @property --radius-md {
   syntax: '<length>';
   inherits: true;
-  initial-value: 0.375rem;
+  initial-value: 6px;
 }
 
 @property --font-size-base {
   syntax: '<length>';
   inherits: true;
-  initial-value: 1rem;
+  initial-value: 16px;
 }
 
 @property --duration-normal {

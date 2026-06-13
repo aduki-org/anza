@@ -18,6 +18,24 @@ import { prefixes } from './prefixes/index.js';
 import { events } from './events/index.js';
 import { cache as apiCache } from './caches/index.js';
 
+let cache = null;
+
+export function sync() {
+  if (typeof document === 'undefined') return;
+  const el = document.getElementById('anza-state');
+  if (el) {
+    try {
+      cache = JSON.parse(el.textContent);
+    } catch (_) {
+      cache = null;
+    }
+  } else {
+    cache = null;
+  }
+}
+
+sync();
+
 // Register global telemetry inbound interceptor to emit requests status/errors events
 pipeline.inbound((responseOrError) => {
   const requestId = responseOrError?.requestId;
@@ -58,6 +76,11 @@ pipeline.inbound((responseOrError) => {
  */
 async function request(url, method, body, opts = {}) {
   const resolvedUrl = prefixes.resolve(url);
+  
+  if (method === 'GET' && cache && resolvedUrl in cache) {
+    return JSON.parse(JSON.stringify(cache[resolvedUrl]));
+  }
+  
   const headers = new Headers(opts.headers || {});
   
   // Auto-serialize JSON bodies
@@ -133,6 +156,8 @@ async function request(url, method, body, opts = {}) {
 
 export const api = {
   get:    (url, opts) => request(url, 'GET', null, opts),
+  state:  () => cache ? JSON.parse(JSON.stringify(cache.__route || {})) : null,
+  sync,
   post:   (url, body, opts) => request(url, 'POST', body, opts),
   put:    (url, body, opts) => request(url, 'PUT', body, opts),
   patch:  (url, body, opts) => request(url, 'PATCH', body, opts),
@@ -153,6 +178,6 @@ export const api = {
   emit: (event, detail) => events.emit(event, detail)
 };
 
-export { pipeline, PlatformError, execute, retry, createNDJSONTransform, stream, upload, prefixes, events, apiCache as cache };
+export { pipeline, PlatformError, execute, retry, createNDJSONTransform, stream, upload, prefixes, events, apiCache as cache, sync };
 
 

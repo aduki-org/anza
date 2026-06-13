@@ -231,7 +231,6 @@ Define a persistent container shell.
 
 ```javascript
 dock('main', {
-  parent: 'body',
   template: '<slot></slot>'
 });
 ```

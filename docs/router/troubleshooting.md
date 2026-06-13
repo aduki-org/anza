@@ -34,7 +34,7 @@ ui.element('page-home', { url: '/' }); // may race
 
 ```javascript
 // Correct
-dock('main', { parent: 'body' });
+dock('main');
 page('/', { tag: 'page-home', via: ['main'] });
 
 // Wrong — 'main' vs 'main-content'
@@ -83,7 +83,7 @@ page('/', { tag: 'page-home', via: ['main'] }); // mismatch
 **Fix:** Ensure every intermediate dock declares its parent:
 
 ```javascript
-dock('main', { parent: 'body' });
+dock('main');
 dock('sidebar', { parent: 'main' });     // missing this causes the error
 dock('content', { parent: 'sidebar' });
 ```

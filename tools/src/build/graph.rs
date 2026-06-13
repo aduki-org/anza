@@ -90,7 +90,7 @@ pub fn resolve(
 
   // Load build cache for incremental rebuilds.
   let mut cache = super::cache::load(&project);
-  let version = "1.0.0";
+  let version = "1.0.1";
 
   // Invalidate cache if version or mode mismatch.
   if let Some(ref c) = cache {
@@ -336,6 +336,18 @@ pub fn resolve(
         copied += 1;
       }
     }
+  }
+
+  // Copy entire tokens and styles directories from src to dist (if they exist)
+  // so that relative CSS @imports work correctly in the browser.
+  let src_tokens = src.join("tokens");
+  if src_tokens.is_dir() {
+    let _ = crate::create::copy::copy(&src_tokens, &dist.join("tokens"));
+  }
+
+  let src_styles = src.join("styles");
+  if src_styles.is_dir() {
+    let _ = crate::create::copy::copy(&src_styles, &dist.join("styles"));
   }
 
   // Rewrite bare specifiers in dist/sw.js to relative paths.

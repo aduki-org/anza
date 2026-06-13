@@ -58,12 +58,12 @@ import { dock } from '@adukiorg/anza/ui';
 navigator.serviceWorker.register('/dist/sw.js');
 
 // Layout shell
-dock('main', { parent: 'body' });
+dock('main');
 
 import './pages/index.js';
 ```
 
-This initializes the UI system, registers the Service Worker, creates a `main` dock attached to `body`, and loads the welcome page.
+This initializes the UI system, registers the Service Worker, creates a `main` dock, and loads the welcome page.
 
 ### `src/pages/entry/index.js`
 

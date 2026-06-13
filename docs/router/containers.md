@@ -13,10 +13,10 @@ Containers are created with `dock()`:
 ```javascript
 import { dock } from '@adukiorg/anza/defs';
 
-dock('main', { parent: 'body' });
+dock('main');
 ```
 
-When `<dock-main>` connects, it registers itself in the graph under the key `'main'` with `'body'` as its parent.
+When `<dock-main>` connects, it registers itself in the graph under the key `'main'`. Because no `parent` is set, it defaults to `'body'` as its parent.
 
 ---
 

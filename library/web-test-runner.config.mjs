@@ -43,7 +43,9 @@ export default {
         </script>
         <script type="module" src="${testFramework}"></script>
       </head>
-      <body></body>
+      <body>
+        <main id="main"></main>
+      </body>
     </html>
   `
 };

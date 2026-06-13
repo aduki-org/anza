@@ -30,60 +30,78 @@ pub fn start(
   logs::watcher!("Watching for changes in '{}' folder...", src_path.display());
 
   tokio::spawn(async move {
-    let debounce_duration = Duration::from_millis(150);
+    let debounce = Duration::from_millis(150);
 
     loop {
-      // T-03: Await first filesystem event asynchronously without blocking tokio thread
-      let first_event = match event_rx.recv().await {
+      // Await the first filesystem event asynchronously without blocking the
+      // Tokio executor.
+      let first = match event_rx.recv().await {
         Some(Ok(evt)) => evt,
         _ => continue,
       };
 
-      let mut events = vec![first_event];
+      let mut events = vec![first];
       let mut last_activity = Instant::now();
 
-      // Non-blocking peek/receive for quick successive saves within the debounce window
-      while last_activity.elapsed() < debounce_duration {
+      // Drain any rapid successive saves within the debounce window.
+      while last_activity.elapsed() < debounce {
         tokio::select! {
-            res = event_rx.recv() => {
-                if let Some(Ok(evt)) = res {
-                    events.push(evt);
-                    last_activity = Instant::now();
-                }
+          res = event_rx.recv() => {
+            if let Some(Ok(evt)) = res {
+              events.push(evt);
+              last_activity = Instant::now();
             }
-            _ = tokio::time::sleep(Duration::from_millis(20)) => {}
+          }
+          _ = tokio::time::sleep(Duration::from_millis(20)) => {}
         }
       }
 
-      let mut messages = Vec::new();
+      // Classify changed paths, deduplicating within the batch.
+      let mut messages: Vec<HmrMessage> = Vec::new();
       for event in events {
         for path in event.paths {
-          if let Some(msg) = watcher.classify_path(&path) {
-            // Prevent duplicate messages in the same batch
-            if !messages
-              .iter()
-              .any(|m: &HmrMessage| m.path == msg.path && m.kind == msg.kind)
-            {
+          if let Some(msg) = watcher.classify(&path) {
+            if !messages.iter().any(|m: &HmrMessage| m.path == msg.path && m.kind == msg.kind) {
               messages.push(msg);
             }
           }
         }
       }
 
-      // Any source change recompiles the dist (types + import-graph resolution).
-      // Non-fatal in dev: errors are logged, the last good dist is kept.
-      let needs_rebuild = messages
-        .iter()
-        .any(|m| matches!(m.kind, ChangeKind::Js | ChangeKind::Html | ChangeKind::Css));
-      if needs_rebuild {
-        crate::extract::compile(&src_path, &dist_path, false, &entries);
+      if messages.is_empty() {
+        continue;
       }
 
-      for msg in messages {
-        logs::watcher!("Event: {:?} -> {}", msg.kind, msg.path);
+      // Determine whether we need to recompile.
+      let needs_rebuild = messages.iter().any(|m| {
+        matches!(m.kind, ChangeKind::Js | ChangeKind::Html | ChangeKind::Css)
+      });
 
-        // Broadcast Event to Axum Connections
-        let _ = tx.send(msg);
+      // Run the (blocking) compile on a dedicated OS thread so the Tokio
+      // executor stays responsive and SSE connections stay alive during the
+      // rebuild. After the rebuild finishes, broadcast the HMR events.
+      if needs_rebuild {
+        let src = src_path.clone();
+        let dist = dist_path.clone();
+        let ents = entries.clone();
+        let tx2 = tx.clone();
+
+        tokio::task::spawn_blocking(move || {
+          crate::extract::compile(&src, &dist, false, &ents);
+        })
+        .await
+        .ok();
+
+        // Broadcast each changed-file event to all connected browser clients.
+        for msg in &messages {
+          logs::watcher!("HMR: {:?} -> {}", msg.kind, msg.path);
+          let _ = tx2.send(msg.clone());
+        }
+      } else {
+        // Non-rebuild events (e.g. assets we don't track) — just log.
+        for msg in &messages {
+          logs::watcher!("Changed (no rebuild): {} ", msg.path);
+        }
       }
     }
   });
@@ -99,43 +117,69 @@ impl SystemWatcher {
     src_path: &Path,
     tx: tokio::sync::mpsc::UnboundedSender<notify::Result<notify::Event>>,
   ) -> Result<Self, notify::Error> {
+    // Canonicalize so that absolute paths returned by inotify events can be
+    // strip_prefix'd correctly. Falls back to the original path on failure.
+    let canonical = std::fs::canonicalize(src_path).unwrap_or_else(|_| src_path.to_path_buf());
+
     let mut watcher = RecommendedWatcher::new(
       move |res| {
         let _ = tx.send(res);
       },
-      Config::default().with_poll_interval(Duration::from_millis(100)),
+      Config::default(),
     )?;
 
-    watcher.watch(src_path, RecursiveMode::Recursive)?;
+    watcher.watch(&canonical, RecursiveMode::Recursive)?;
 
     Ok(Self {
       _watcher: watcher,
-      src_path: src_path.to_path_buf(),
+      src_path: canonical,
     })
   }
 
-  fn classify_path(&self, path: &Path) -> Option<HmrMessage> {
-    let extension = path.extension()?.to_str()?;
-    let relative_path = path
+  /// Map a changed file path to an `HmrMessage`.
+  ///
+  /// Files under `tokens/` or `styles/` are always treated as CSS so the
+  /// browser hot-swaps them without a full reload.  Other `.css` files get
+  /// the same treatment.  `.js` and `.html` files trigger a full reload.
+  fn classify(&self, path: &Path) -> Option<HmrMessage> {
+    // Canonicalize the event path so strip_prefix works regardless of whether
+    // notify returned an absolute or relative path.
+    let abs = std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
+    let ext = abs.extension()?.to_str()?;
+    let rel = abs
       .strip_prefix(&self.src_path)
       .ok()?
       .to_string_lossy()
       .into_owned();
 
-    match extension {
-      "css" => Some(HmrMessage {
-        kind: ChangeKind::Css,
-        path: relative_path,
-      }),
-      "js" => Some(HmrMessage {
-        kind: ChangeKind::Js,
-        path: relative_path,
-      }),
-      "html" => Some(HmrMessage {
-        kind: ChangeKind::Html,
-        path: relative_path,
-      }),
-      _ => None,
-    }
+    let first_component = abs
+      .strip_prefix(&self.src_path)
+      .ok()
+      .and_then(|p| p.components().next())
+      .and_then(|c| {
+        if let std::path::Component::Normal(s) = c {
+          s.to_str()
+        } else {
+          None
+        }
+      })
+      .unwrap_or("");
+
+    let kind = match ext {
+      "css" => ChangeKind::Css,
+      "js" => {
+        // Design-token and style files that have a .js extension should still
+        // trigger a full reload.
+        if first_component == "tokens" || first_component == "styles" {
+          ChangeKind::Css
+        } else {
+          ChangeKind::Js
+        }
+      }
+      "html" => ChangeKind::Html,
+      _ => return None,
+    };
+
+    Some(HmrMessage { kind, path: rel })
   }
 }

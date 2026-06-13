@@ -67,7 +67,7 @@ ui.element('ui-input', {
     const input = tags.one('input');
     input.disabled = disabled;
   }
-};
+}, import.meta.url);
 
 function syncAttributes(el, tags) {
   const input = tags.one('input');
@@ -100,4 +100,3 @@ function validate(el, internals, input) {
     internals.setValidity({});
   }
 }
-}, import.meta.url);

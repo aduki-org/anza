@@ -19,6 +19,12 @@ struct RouteRecord<'a> {
   #[serde(skip_serializing_if = "Vec::is_empty")]
   via: &'a Vec<String>,
   params: Vec<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  file: Option<&'a str>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  html: Option<&'a str>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  css: Option<&'a str>,
 }
 
 fn to_pascal_case(s: &str) -> String {
@@ -102,6 +108,9 @@ pub fn emit(specs: &[(std::path::PathBuf, ExtractedSpec)], dist_dir: &Path) {
       container: spec.container.as_deref(),
       via: &spec.via,
       params,
+      file: spec.file.as_deref(),
+      html: spec.html.as_deref(),
+      css: spec.css.as_deref(),
     });
 
     let container_str = match &spec.container {

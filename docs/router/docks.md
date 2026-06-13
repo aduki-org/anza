@@ -139,7 +139,7 @@ This happens automatically. You do not need to call these manually for docks.
 ## Example: Sidebar Layout
 
 ```javascript
-dock('main', { parent: 'body' });
+dock('main');
 dock('sidebar', { parent: 'main' });
 dock('content', { parent: 'main' });
 

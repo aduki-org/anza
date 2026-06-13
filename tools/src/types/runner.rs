@@ -39,4 +39,7 @@ pub struct ExtractedSpec {
   /// Parent dock name declared by a `dock`.
   pub parent: Option<String>,
   pub meta: std::collections::HashMap<String, String>,
+  pub file: Option<String>,
+  pub html: Option<String>,
+  pub css: Option<String>,
 }

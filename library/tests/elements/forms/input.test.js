@@ -6,7 +6,7 @@
  * Source: plan.md Phase 6-A, elements/forms/input.js
  */
 
-import '../../../src/elements/forms/input.js';
+import '../../../src/elements/forms/input/index.js';
 
 describe('<ui-input> Form-Associated Element', () => {
   let input;

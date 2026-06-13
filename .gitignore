@@ -72,5 +72,5 @@ plans_refs/*
 all.text
 all.rust
 .agents
-web/
+webtest/
 .codexweb/

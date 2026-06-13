@@ -28,7 +28,7 @@ const CONTAIN = ':host { contain: layout; display: block; }';
  */
 export function dock(name, config = {}, base) {
   const tag = config.tag ?? `dock-${name}`;
-  const parent = config.parent ?? 'body';
+  const parent = config.parent ?? 'main';
 
   const spec = translate(config);
 
@@ -106,7 +106,7 @@ async function swap(el, options = {}) {
 
   if (typeof this.startViewTransition === 'function') {
     try {
-      this._tx = this.startViewTransition({ callback: go });
+      this._tx = this.startViewTransition(go);
       await this._tx.finished;
     } catch (err) {
       if (err?.name !== 'AbortError') console.warn('[Native UI] dock scoped VT aborted:', err);

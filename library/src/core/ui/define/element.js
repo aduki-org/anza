@@ -1,5 +1,5 @@
 import { BaseElement } from '../base.js';
-import { scheduleFrame } from '../schedule.js';
+import { scheduleFrame, yieldTask } from '../schedule.js';
 import { router } from '../../router/index.js';
 import { specRegistry, internalsMap, initializedMap, pendingUpdatesMap, updateScheduledMap } from './state.js';
 import { preloadResources } from './utils.js';
@@ -84,7 +84,7 @@ export function element(tag, spec, base) {
           }
         }
       };
-      window.addEventListener('native:hmr:css', hmrHandler);
+      window.addEventListener('anza:hmr:css', hmrHandler);
     }
   }
 
@@ -136,6 +136,13 @@ export function element(tag, spec, base) {
 
       if (!this.ctrl || this.ctrl.signal.aborted || !this.isConnected) {
         return;
+      }
+
+      if (typeof document !== 'undefined' && document.readyState === 'loading') {
+        await yieldTask();
+        if (!this.ctrl || this.ctrl.signal.aborted || !this.isConnected) {
+          return;
+        }
       }
 
       if (templateNode && this.shadowRoot.childNodes.length === 0) {

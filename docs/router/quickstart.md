@@ -11,10 +11,10 @@ A `dock` is a persistent container shell. It stays in the DOM across route chang
 ```javascript
 import { dock } from '@adukiorg/anza/defs';
 
-dock('main', { parent: 'body' });
+dock('main');
 ```
 
-This registers `<dock-main>` as a custom element. When it connects, it registers itself in the container graph under the key `'main'`, with `'body'` as its parent. You can place it directly in HTML or let the router create it automatically.
+This registers `<dock-main>` as a custom element. When it connects, it registers itself in the container graph under the key `'main'`. The default parent is `'body'`, so `<dock-main>` is treated as a top-level container. You can place it directly in HTML or let the router create it automatically.
 
 ---
 
@@ -156,7 +156,7 @@ import { router } from '@adukiorg/anza/router';
 import { page, dock } from '@adukiorg/anza/defs';
 
 // Layout shell
-dock('main', { parent: 'body' });
+dock('main');
 
 // Routes
 page('/', {

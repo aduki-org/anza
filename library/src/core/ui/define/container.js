@@ -56,7 +56,7 @@ export function container(tag, spec, base = import.meta.url) {
       // Strategy 1: Element-scoped transition (Chrome 147+, concurrent-safe)
       if (typeof this.startViewTransition === 'function') {
         try {
-          const vt = this.startViewTransition({ callback: doSwap });
+          const vt = this.startViewTransition(doSwap);
           await vt.ready;
         } catch (err) {
           if (err?.name !== 'AbortError') console.warn('[UI Container] Scoped VT aborted:', err);

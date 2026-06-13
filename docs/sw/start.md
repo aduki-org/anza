@@ -51,7 +51,7 @@ import { dock } from '@adukiorg/anza/ui';
 navigator.serviceWorker.register('/dist/sw.js');
 
 // Layout shell
-dock('main', { parent: 'body' });
+dock('main');
 
 // Pages
 import './pages/index/index.js';

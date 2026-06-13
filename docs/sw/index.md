@@ -74,7 +74,7 @@ import { dock } from '@adukiorg/anza/ui';
 
 navigator.serviceWorker.register('/dist/sw.js');
 
-dock('main', { parent: 'body' });
+dock('main');
 ```
 
 ---

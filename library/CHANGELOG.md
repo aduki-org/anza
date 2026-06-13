@@ -17,6 +17,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.0] — 2026-06-13
+
+### Fixed
+
+- Sync `tools/Cargo.toml` version with npm package version (0.2.1 → 0.3.0)
+
+---
+
 ## [0.2.8] — 2026-06-09
 
 ### Fixed

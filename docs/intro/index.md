@@ -64,7 +64,7 @@ import { page, dock, view } from '@adukiorg/anza/ui';
 import '@adukiorg/anza/ui';
 import { dock, page } from '@adukiorg/anza/ui';
 
-dock('main', { parent: 'body' });
+dock('main');
 
 page('/', {
   tag: 'page-home',

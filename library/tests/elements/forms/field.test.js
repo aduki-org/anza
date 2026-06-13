@@ -6,7 +6,7 @@
  * Source: plan.md Phase 6-A, elements/forms/field.js
  */
 
-import '../../../src/elements/forms/field.js';
+import '../../../src/elements/forms/field/index.js';
 
 describe('<ui-field> Control Wrapper Element', () => {
   let field;

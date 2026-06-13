@@ -6,8 +6,8 @@
  * Source: plan.md Phase 6-A, elements/forms/form.js
  */
 
-import '/src/elements/forms/form.js';
-import '/src/elements/forms/input.js';
+import '/src/elements/forms/form/index.js';
+import '/src/elements/forms/input/index.js';
 
 describe('<ui-form> Coordinator Element', () => {
   let form;

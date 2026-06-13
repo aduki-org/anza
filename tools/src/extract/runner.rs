@@ -83,7 +83,7 @@ pub fn run(src_dir: &Path, dist_types_dir: &Path) {
   use rayon::prelude::*;
 
   // Parallel walk & parse — import graph handles element selection naturally
-  let specs: Vec<(std::path::PathBuf, ExtractedSpec)> = paths
+  let mut specs: Vec<(std::path::PathBuf, ExtractedSpec)> = paths
     .par_iter()
     .filter_map(|path| {
       if path.extension().map_or(false, |ext| ext == "js") {
@@ -99,6 +99,11 @@ pub fn run(src_dir: &Path, dist_types_dir: &Path) {
       }
     })
     .collect();
+
+  for (file_path, spec) in &mut specs {
+    let relative_path = file_path.strip_prefix(src_dir).unwrap_or(file_path);
+    spec.file = Some(relative_path.to_string_lossy().to_string().replace('\\', "/"));
+  }
 
   // 2. Write individual .d.ts files and the main index.d.ts
   std::fs::create_dir_all(dist_types_dir).ok();
@@ -248,6 +253,7 @@ impl ElementVisitor {
       via: Vec::new(),
       parent: None,
       meta: HashMap::new(),
+      ..Default::default()
     };
 
     // For a page, the first argument is the route pattern.
@@ -348,6 +354,32 @@ fn parse_spec_object(obj: &ObjectLit, spec: &mut ExtractedSpec) {
           } else if key.sym == "meta" {
             if let Expr::Object(meta_obj) = &*kv.value {
               parse_meta(meta_obj, spec);
+            }
+          } else if key.sym == "template" {
+            if let Some(t) = get_string_literal(&kv.value) {
+              if t.starts_with("./") || t.starts_with("../") || t.ends_with(".html") {
+                spec.html = Some(t);
+              }
+            } else if let Expr::Object(template_obj) = &*kv.value {
+              for t_prop in &template_obj.props {
+                if let PropOrSpread::Prop(tp) = t_prop {
+                  if let Prop::KeyValue(tkv) = &**tp {
+                    if let PropName::Ident(tkey) = &tkv.key {
+                      if tkey.sym == "html" {
+                        spec.html = get_string_literal(&tkv.value);
+                      } else if tkey.sym == "css" {
+                        spec.css = get_string_literal(&tkv.value);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } else if key.sym == "style" {
+            if let Some(s) = get_string_literal(&kv.value) {
+              if s.starts_with("./") || s.starts_with("../") || s.ends_with(".css") {
+                spec.css = Some(s);
+              }
             }
           }
         }

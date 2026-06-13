@@ -29,7 +29,9 @@ const HTML: &str = r#"<!DOCTYPE html>
 
     <script type="module" src="/dist/app.js"></script>
   </head>
-  <body></body>
+  <body>
+    <dock-main id="main"></dock-main>
+  </body>
 </html>
 "#;
 
@@ -41,10 +43,10 @@ import { dock } from '@adukiorg/anza/ui';
 import '@adukiorg/anza/theme';
 
 // Service Worker
-navigator.serviceWorker.register('/dist/sw.js');
+navigator.serviceWorker.register('/dist/sw.js', { type: 'module' });
 
 // Layout shell
-dock('main', { parent: 'body' });
+dock('main');
 
 // Pages
 import './pages/index.js';

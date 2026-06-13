@@ -41,12 +41,12 @@ import { dock } from '@adukiorg/anza/ui';
 
 navigator.serviceWorker.register('/dist/sw.js');
 
-dock('main', { parent: 'body' });
+dock('main');
 
 import './pages/index.js';
 ```
 
-This bootstraps the framework, registers the Service Worker, and creates a `main` dock attached to `body`. All pages render through this dock by default.
+This bootstraps the framework, registers the Service Worker, and creates a `main` dock. All pages render through this dock by default.
 
 ### `src/index.html`
 
