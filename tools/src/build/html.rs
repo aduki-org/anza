@@ -64,7 +64,15 @@ pub fn inject_assets(html: &str, map: &HashMap<String, String>, dev: bool) -> St
               detail: { path: msg.path, css }
             }));
           }
-        } else if (msg.kind === 'js' || msg.kind === 'html' || msg.kind === 'reload') {
+        } else if (msg.kind === 'html') {
+          const res = await fetch(`/dist/${msg.path}?t=${Date.now()}`);
+          if (res.ok) {
+            const html = await res.text();
+            window.dispatchEvent(new CustomEvent('anza:hmr:html', {
+              detail: { path: msg.path, html }
+            }));
+          }
+        } else if (msg.kind === 'js' || msg.kind === 'reload') {
           location.reload();
         }
       } catch (err) {

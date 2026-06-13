@@ -59,7 +59,7 @@ export function element(tag, spec, base) {
 
   // Initiate resource fetching exactly once per component registration (R-06)
   let resolved = null;
-  const resourcesPromise = preloadResources(tag, styleUrl, templateUrl, spec.template, spec.style).then(res => {
+  let resourcesPromise = preloadResources(tag, styleUrl, templateUrl, spec.template, spec.style).then(res => {
     resolved = res;
     return res;
   });
@@ -87,6 +87,35 @@ export function element(tag, spec, base) {
     }
   }
 
+  // Handle hot reloading of HTML templates
+  if (templateUrl && typeof window !== 'undefined') {
+    if (!window.__native_hmr_html_listeners__) {
+      window.__native_hmr_html_listeners__ = new Set();
+    }
+    if (!window.__native_hmr_html_listeners__.has(templateUrl)) {
+      window.__native_hmr_html_listeners__.add(templateUrl);
+      const hmrHandler = async (e) => {
+        const { path: changedPath, html } = e.detail;
+        const absoluteChangedUrl = new URL(changedPath, window.location.origin).href;
+        
+        if (templateUrl === absoluteChangedUrl || templateUrl.endsWith(changedPath)) {
+          // Re-parse HTML into the cached resolved object
+          resourcesPromise = preloadResources(tag, styleUrl, null, html, spec.style).then(res => {
+            resolved = res;
+            // Now re-bind instances!
+            const instances = window.__native_hmr_instances__?.get(tag) || [];
+            for (const instance of instances) {
+              if (instance.__hmr_rebind) instance.__hmr_rebind();
+            }
+            console.log(`[HMR] Template hot-swapped for <${tag}>`);
+            return res;
+          });
+        }
+      };
+      window.addEventListener('anza:hmr:html', hmrHandler);
+    }
+  }
+
   class DeclarativeElement extends BaseElement {
     static observedAttributes = observedAttrs;
 
@@ -97,6 +126,11 @@ export function element(tag, spec, base) {
       initializedMap.set(this, false);
       pendingUpdatesMap.set(this, new Map());
       updateScheduledMap.set(this, false);
+
+      if (typeof window !== 'undefined') {
+        if (!window.__native_hmr_instances__) window.__native_hmr_instances__ = new Map();
+        if (!window.__native_hmr_instances__.has(tag)) window.__native_hmr_instances__.set(tag, new Set());
+      }
 
       if (spec.form) {
         const internals = this.attachInternals();
@@ -125,6 +159,10 @@ export function element(tag, spec, base) {
     async connectedCallback() {
       // AbortController bootstrap inside BaseElement
       super.connectedCallback();
+      
+      if (typeof window !== 'undefined') {
+        window.__native_hmr_instances__?.get(tag)?.add(this);
+      }
       
       // Wait for resolved resources to compile (synchronously if already cached)
       let res = resolved;
@@ -190,6 +228,9 @@ export function element(tag, spec, base) {
     }
 
     disconnectedCallback() {
+      if (typeof window !== 'undefined') {
+        window.__native_hmr_instances__?.get(tag)?.delete(this);
+      }
       if (spec.unmount) {
         spec.unmount({ 
           el: this, 
@@ -200,6 +241,66 @@ export function element(tag, spec, base) {
         });
       }
       super.disconnectedCallback();
+    }
+
+    async __hmr_rebind() {
+      // 1. Unmount component safely
+      if (spec.unmount) {
+        spec.unmount({ 
+          el: this, 
+          tags: this._tags,
+          refs: this._refs,
+          watch: this._watch,
+          internals: internalsMap.get(this) 
+        });
+      }
+
+      // 2. Clear Shadow DOM
+      this.shadowRoot.innerHTML = '';
+      
+      // 3. Clone new template
+      let res = resolved;
+      if (!res) {
+        res = await resourcesPromise;
+      }
+      const { templateNode, stylesheet, cssText, tagsDescriptor } = res;
+
+      if (templateNode) {
+        this.shadowRoot.appendChild(templateNode.cloneNode(true));
+      }
+      if (stylesheet) {
+        this.shadowRoot.adoptedStyleSheets = [stylesheet];
+      } else if (cssText) {
+        const style = document.createElement('style');
+        style.textContent = cssText;
+        this.shadowRoot.prepend(style);
+      }
+      
+      // 4. Recreate component context to rebind DOM events and tags
+      const context = createComponentContext({
+        el: this,
+        shadowRoot: this.shadowRoot,
+        ctrl: this.ctrl,
+        descriptor: tagsDescriptor,
+        internals: internalsMap.get(this)
+      });
+      this._ctx = context;
+      this._tags = context.tags;
+      this._on = context.on;
+      this._refs = context.refs;
+      this._watch = context.watch;
+      
+      // 5. Trigger mount again
+      if (spec.mount) {
+        try {
+          const mountRes = spec.mount(context);
+          if (mountRes instanceof Promise) {
+            mountRes.catch(console.error);
+          }
+        } catch (err) {
+          console.error('[Native UI] mount failed during HMR:', err);
+        }
+      }
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
