@@ -17,6 +17,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.2] — 2026-06-13
+
+### Fixed
+
+- Update scaffolding templates to use `<dock-main>` and ES module Service Worker registration (`{ type: 'module' }`)
+- Fix CLI watcher to properly resolve Linux `inotify` absolute paths for CSS and JS Hot Module Reloading (HMR)
+- Improve HMR client script with SSE auto-reconnect back-off
+
+---
+
 ## [0.3.1] — 2026-06-13
 
 ### Changed
