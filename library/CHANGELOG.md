@@ -17,6 +17,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.3] — 2026-06-13
+
+### Changed
+
+- Removed `<main>` to `<dock-main>` compiler auto-alignment. Apps now use `<dock-main id="main">` natively in HTML templates.
+- Update `boot.js` router error messages to correctly refer to `<dock-main id="main">`.
+
+---
+
 ## [0.3.2] — 2026-06-13
 
 ### Fixed

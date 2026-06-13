@@ -23,7 +23,6 @@ pub fn strip_importmap(html: &str) -> String {
 /// Inject importmap link and optional HMR script into an HTML string.
 pub fn inject_assets(html: &str, map: &HashMap<String, String>, dev: bool) -> String {
   let clean = strip_importmap(html);
-  let aligned = align(&clean);
 
   let json = serde_json::json!({ "imports": map });
   let text = serde_json::to_string_pretty(&json).unwrap_or_default();
@@ -90,7 +89,7 @@ pub fn inject_assets(html: &str, map: &HashMap<String, String>, dev: bool) -> St
     ""
   };
 
-  let mut out = aligned;
+  let mut out = clean;
   if let Some(pos) = out.find("<head>") {
     let insert = pos + 6;
     out.insert_str(insert, &tag);
@@ -113,119 +112,3 @@ pub fn inject_assets(html: &str, map: &HashMap<String, String>, dev: bool) -> St
   out
 }
 
-fn check(attrs: &str) -> bool {
-  let mut pos = 0;
-  while let Some(idx) = attrs[pos..].find("id") {
-    let id_start = pos + idx;
-    pos = id_start + 2;
-    let after_id = &attrs[pos..];
-    let mut chars = after_id.chars();
-    let mut found_eq = false;
-    let mut next_char = chars.next();
-    while let Some(c) = next_char {
-      if c.is_whitespace() {
-        next_char = chars.next();
-        continue;
-      }
-      if c == '=' {
-        found_eq = true;
-        break;
-      }
-      break;
-    }
-    if !found_eq {
-      continue;
-    }
-    let mut val = String::new();
-    let mut quote = None;
-    let mut started = false;
-    while let Some(c) = chars.next() {
-      if !started {
-        if c.is_whitespace() {
-          continue;
-        }
-        if c == '"' || c == '\'' {
-          quote = Some(c);
-          started = true;
-          continue;
-        }
-        started = true;
-        val.push(c);
-        continue;
-      }
-      if let Some(q) = quote {
-        if c == q {
-          break;
-        }
-        val.push(c);
-      } else {
-        if c.is_whitespace() || c == '>' || c == '/' {
-          break;
-        }
-        val.push(c);
-      }
-    }
-    if val == "main" {
-      return true;
-    }
-  }
-  false
-}
-
-pub fn align(html: &str) -> String {
-  let mut result = html.to_string();
-  let mut pos = 0;
-
-  while let Some(start_idx) = result[pos..].find("<main") {
-    let abs_start = pos + start_idx;
-    if let Some(end_offset) = result[abs_start..].find('>') {
-      let abs_end = abs_start + end_offset;
-      let attrs = &result[(abs_start + 5)..abs_end];
-      if check(attrs) {
-        result.replace_range(abs_start..(abs_start + 5), "<dock-main");
-        let search_start = abs_end + 5;
-        if let Some(close_offset) = result[search_start..].find("</main>") {
-          let abs_close = search_start + close_offset;
-          result.replace_range(abs_close..(abs_close + 7), "</dock-main>");
-        }
-        break;
-      }
-      pos = abs_end + 1;
-    } else {
-      break;
-    }
-  }
-  result
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn aligns_standard_main_element() {
-    let input = "<body>\n  <main id=\"main\">\n    <p>content</p>\n  </main>\n</body>";
-    let expected = "<body>\n  <dock-main id=\"main\">\n    <p>content</p>\n  </dock-main>\n</body>";
-    assert_eq!(align(input), expected);
-  }
-
-  #[test]
-  fn aligns_main_element_with_single_quotes() {
-    let input = "<body><main id='main'></main></body>";
-    let expected = "<body><dock-main id='main'></dock-main></body>";
-    assert_eq!(align(input), expected);
-  }
-
-  #[test]
-  fn aligns_main_element_with_classes_and_spaces() {
-    let input = "<body><main class=\"container\"  id  =  \"main\"  data-test>hello</main></body>";
-    let expected = "<body><dock-main class=\"container\"  id  =  \"main\"  data-test>hello</dock-main></body>";
-    assert_eq!(align(input), expected);
-  }
-
-  #[test]
-  fn skips_other_main_elements() {
-    let input = "<body><main id=\"other\"></main></body>";
-    assert_eq!(align(input), input);
-  }
-}

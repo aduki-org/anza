@@ -49,8 +49,8 @@ function anchor() {
   const el = document.getElementById('main');
   if (!el) {
     throw new Error(
-      `[Router] <main id="main"> is required but was not found in the document. ` +
-      `Ensure your HTML shell contains exactly one <main id="main"> before any scripts run.`
+      `[Router] <dock-main id="main"> is required but was not found in the document. ` +
+      `Ensure your HTML shell contains exactly one <dock-main id="main"> before any scripts run.`
     );
   }
   graphRoot.ref = new WeakRef(el);
