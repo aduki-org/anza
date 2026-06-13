@@ -75,7 +75,7 @@ async fn hmr_handler(
 
 #[derive(serde::Deserialize, Debug)]
 struct RouteInfo {
-  tag: String,
+  _tag: String,
   path: String,
   file: Option<String>,
   html: Option<String>,

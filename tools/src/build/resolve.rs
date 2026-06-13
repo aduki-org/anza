@@ -225,7 +225,7 @@ mod tests {
     user.insert("@adukiorg/anza/ui".to_string(), "/dist/core/ui/index.js".to_string());
     user.insert("my-comp".to_string(), "/dist/user.js".to_string());
 
-    let mut lib = HashMap::new();
+    let lib = HashMap::new();
     let lib_src = std::env::temp_dir().join("anza-lib-src");
     fs::create_dir_all(&lib_src).ok();
     fs::create_dir_all(lib_src.join("core").join("ui")).ok();

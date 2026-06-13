@@ -45,7 +45,6 @@ export function gate(promise) {
  * there is no body fallback.
  */
 function anchor() {
-  console.log('[Boot] anchor() started.');
   const el = document.getElementById('main');
   if (!el) {
     throw new Error(
@@ -64,12 +63,10 @@ function anchor() {
  * @param {() => any | Promise<any>} emitFn - runs the initial match + emit.
  */
 export function boot(emitFn) {
-  console.log('[Boot] boot() called. booted =', booted);
   if (booted) return;
   trigger = emitFn;
 
   const launch = async () => {
-    console.log('[Boot] launch() started. booted =', booted, 'gates count =', gates.size);
     if (booted) return;
 
     anchor();   // 1. wire main#main into the graph — must be first
@@ -77,16 +74,13 @@ export function boot(emitFn) {
     // Snapshot current gates; settle them all (failures are non-fatal — a
     // single element that fails to define must not wedge the whole router).
     const pending = Array.from(gates);
-    console.log('[Boot] pending gates:', pending);
     if (pending.length) {
       await Promise.allSettled(pending);
     }
-    console.log('[Boot] all gates settled!');
     booted = true;
     const fn = trigger;
     trigger = null;
     if (fn) {
-      console.log('[Boot] executing initial match trigger...');
       await fn();   // 3. first match + emit
     }
   };

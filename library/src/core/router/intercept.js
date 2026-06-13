@@ -156,15 +156,16 @@ export function setup() {
       /**
        * Executes DOM mutations, layout changes, and provides fallbacks for Safari.
        */
-      async handler() {
-        const destination = event.destination;
-        let routeMatch = null;
-        try {
-          routeMatch = await match(destination.url);
-        } catch (err) {
-          emit('error', { error: err, url: destination.url, route: null, phase: 'match' });
-          return;
-        }
+      handler() {
+        (async () => {
+          const destination = event.destination;
+          let routeMatch = null;
+          try {
+            routeMatch = await match(destination.url);
+          } catch (err) {
+            emit('error', { error: err, url: destination.url, route: null, phase: 'match' });
+            return;
+          }
 
         // Layout resolution: ensure the route's container chain is mounted.
         // Routes declare an ordered `via` chain (root-to-leaf) or a single
@@ -237,6 +238,7 @@ export function setup() {
             }
           }
         });
+        })();
       }
     });
   };

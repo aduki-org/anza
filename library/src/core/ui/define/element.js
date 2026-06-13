@@ -19,7 +19,6 @@ const RESERVED = new Set([
 export function element(tag, spec, base) {
   if (typeof customElements === 'undefined') return;
   if (customElements.get(tag)) {
-    console.warn(`Declarative Element "${tag}" is already defined. Skipping.`);
     return;
   }
 

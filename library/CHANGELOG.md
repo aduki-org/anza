@@ -17,6 +17,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.5] — 2026-06-13
+
+### Changed
+
+- Prevent native browser tab loading spinner during client-side navigation.
+- Removed unnecessary console logs in `boot.js`, `orchestrator.js`, and `element.js`.
+
+---
+
 ## [0.3.3] — 2026-06-13
 
 ### Changed

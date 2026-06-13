@@ -11,7 +11,6 @@ export function initOrchestrator() {
   if (typeof window !== 'undefined') {
     dispose?.();
     dispose = router.on('found', async ({ tag, params, query, hash, chain, direction }) => {
-      console.log('[Orchestrator] FOUND event received for tag:', tag);
       // Resolve the top-level layout element in the chain
       const topTag = chain && chain.length > 0 ? chain[0].tag : tag;
       const topParams = chain && chain.length > 0 ? chain[0].params : params;
@@ -22,13 +21,11 @@ export function initOrchestrator() {
       }
 
       const spec = specRegistry.get(topTag.toLowerCase());
-      console.log('[Orchestrator] Resolved spec for tag', topTag, ':', spec);
       // Resolve the render target: the last container in the `via` chain, or
       // the legacy single `container`. Without either there is nothing to mount.
       const target = (Array.isArray(spec?.via) && spec.via.length)
         ? spec.via[spec.via.length - 1]
         : spec?.container;
-      console.log('[Orchestrator] Target container name:', target);
       if (!spec || !target) {
         console.warn('[Orchestrator] Early return: missing spec or target');
         return;
@@ -37,7 +34,6 @@ export function initOrchestrator() {
       // Use Advanced Container Registry lookup instead of blind DOM query.
       // The interceptor's cascade has already ensured the chain is mounted.
       const containerEl = router.getContainer(target);
-      console.log('[Orchestrator] containerEl found in registry:', containerEl);
       if (!containerEl) {
         console.warn(`Target container "${target}" not found in DOM for element <${topTag}>`);
         return;

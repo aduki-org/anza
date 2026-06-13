@@ -59,6 +59,17 @@ pub fn start(
       // Classify changed paths, deduplicating within the batch.
       let mut messages: Vec<HmrMessage> = Vec::new();
       for event in events {
+        let is_mod = match event.kind {
+          notify::EventKind::Modify(notify::event::ModifyKind::Data(_)) |
+          notify::EventKind::Modify(notify::event::ModifyKind::Name(_)) |
+          notify::EventKind::Create(_) |
+          notify::EventKind::Remove(_) => true,
+          _ => false,
+        };
+        if !is_mod {
+          continue;
+        }
+
         for path in event.paths {
           if let Some(msg) = watcher.classify(&path) {
             if !messages.iter().any(|m: &HmrMessage| m.path == msg.path && m.kind == msg.kind) {
