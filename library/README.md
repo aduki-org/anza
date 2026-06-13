@@ -53,7 +53,7 @@ npm install
 npm run dev
 ```
 
-That is it. Your browser loads `dist/app.js` natively. No webpack. No vite. No `npm run build` that takes forty seconds.
+That is it. Your browser loads `dist/app.js` natively. No webpack. No vite. No `npm run build` that takes forty seconds — our Rust CLI compiles your app in milliseconds.
 
 ---
 
@@ -92,7 +92,7 @@ Use it:
 <user-card name="Alice" active></user-card>
 ```
 
-No build step. No JSX transform. No virtual DOM reconciliation. The browser parses the template, creates the DOM, and updates it when props change. Because that is literally what browsers are for.
+No complex build pipeline. No JSX transform. No virtual DOM reconciliation. The browser parses the template, creates the DOM, and updates it when props change. Because that is literally what browsers are for.
 
 ### A Route
 
@@ -156,7 +156,7 @@ You own `src/tokens/` after scaffolding. Change a primitive, every component upd
 
 **Native first.** If the browser has an API for it, we use it. If it doesn't, we build the smallest possible wrapper. We do not reimplement the browser inside JavaScript.
 
-**Zero build.** The browser resolves ESM imports natively. Our Rust CLI copies the files you use into `dist/`. That is the whole build step. No bundling. No tree-shaking algorithms. The browser is single-threaded anyway.
+**Instant builds.** The browser resolves ESM imports natively. Our Rust CLI copies the files you use into `dist/` in milliseconds. That is the whole build step. No bundling. No tree-shaking algorithms. The browser is single-threaded anyway.
 
 **You own your code.** Scaffolding copies starter files into `src/`. The library never touches them again. No hidden configs. No magic globals. No runtime injection of framework internals.
 

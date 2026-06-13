@@ -17,7 +17,7 @@ use types::HmrMessage;
 #[command(
   name = "anza",
   version = "0.3.6",
-  about = "Anza web platform library — reactive state, networking, offline, animations, custom elements. Zero build step. Pure browser ESM."
+  about = "Anza web platform library — reactive state, networking, offline, animations, custom elements. Instant build step. Pure browser ESM."
 )]
 struct Args {
   #[command(subcommand)]

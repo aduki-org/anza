@@ -1,7 +1,7 @@
 {
   "name": "@adukiorg/anza",
   "version": "0.3.6",
-  "description": "Anza web platform library — reactive state, networking, offline, animations, custom elements. Zero build step. Pure browser ESM.",
+  "description": "Anza web platform library — reactive state, networking, offline, animations, custom elements. Instant build step. Pure browser ESM.",
   "author": "fescii",
   "license": "MIT",
   "type": "module",
