@@ -16,7 +16,7 @@ use types::HmrMessage;
 #[derive(Parser, Debug)]
 #[command(
   name = "anza",
-  version = "0.3.5",
+  version = "0.3.6",
   about = "Anza web platform library — reactive state, networking, offline, animations, custom elements. Zero build step. Pure browser ESM."
 )]
 struct Args {

@@ -17,6 +17,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.6] — 2026-06-13
+
+### Fixed
+
+- Resolved NPM publish collision for the watcher hotfix.
+
+---
+
 ## [0.3.5] — 2026-06-13
 
 ### Changed
