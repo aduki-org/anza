@@ -17,6 +17,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.1] — 2026-06-13
+
+### Changed
+
+- Soften library README tone — remove sarcastic framework comparisons
+- Update dock() example to use simplified API (no parent parameter)
+
+---
+
 ## [0.3.0] — 2026-06-13
 
 ### Fixed
