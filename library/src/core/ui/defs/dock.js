@@ -10,9 +10,9 @@
  * Source: definations.md §4, tasks.md Phase 6
  */
 
-import { router } from '../../router/index.js';
-import { gate } from '../../router/boot.js';
 import { element } from '../define/element.js';
+import { gate } from '../../router/boot.js';
+import { router } from '../../router/index.js';
 import { translate } from './spec.js';
 
 // Element-scoped containment so View Transitions are isolated to the dock.

@@ -12,11 +12,11 @@
 
 **This is** a web platform library that treats the browser as the runtime. It gives you reactive state, client-side routing, custom elements, offline sync, and animations — all as plain ES modules the browser resolves directly. No bundler. No virtual DOM. No framework lock-in.
 
-**This is NOT** another React competitor. If you love JSX, useEffect cleanup races, and wondering why your bundle is 400KB, Anza is not for you. We are not trying to replace React. React is fine. React is great. React is for people who enjoy debugging `useMemo` dependency arrays at 2am. We are for people who want to write `.js` files and let the browser do what it was built to do.
+**This is NOT** another React competitor. React is excellent for complex applications with rich ecosystems. Anza is for projects that prefer browser-native APIs and minimal tooling. We're not trying to replace React — we're offering a different approach.
 
-**This is NOT** Angular. We do not have a CLI that generates fourteen files to render a button. We have `element('my-button', { template: '<button>Click me</button>' })`. That is the whole API.
+**This is NOT** Angular. Angular provides a comprehensive framework with powerful tooling. Anza focuses on simplicity: `element('my-button', { template: '<button>Click me</button>' })`. That's the whole API.
 
-**This is NOT** Vue. We do not have a template compiler. We do not have a virtual DOM diffing algorithm that runs in JavaScript to figure out what the browser should have already figured out. We write HTML. The browser parses HTML. It has been doing this since 1993. It is pretty good at it.
+**This is NOT** Vue. Vue's template compiler and virtual DOM enable great developer experiences. Anza uses native HTML parsing — the browser handles the DOM directly, which works well for many use cases.
 
 ---
 
@@ -99,7 +99,7 @@ No build step. No JSX transform. No virtual DOM reconciliation. The browser pars
 ```javascript
 import { page, dock } from '@adukiorg/anza/defs';
 
-dock('main', { parent: 'body' });
+dock('main');
 
 page('/', {
   tag: 'page-home',
@@ -124,7 +124,7 @@ store.subscribe('count', () => {
 store.set('count', 1);
 ```
 
-Proxy-based reactivity. Batched updates. Cross-tab sync via `BroadcastChannel`. No reducers. No actions. No sagas. Just a store that notifies subscribers when data changes. Revolutionary, we know.
+Proxy-based reactivity. Batched updates. Cross-tab sync via `BroadcastChannel`. No reducers. No actions. No sagas. Just a store that notifies subscribers when data changes.
 
 ### Theme Switching (Automatic)
 
@@ -135,7 +135,7 @@ theme.toggle();        // light ↔ dark
 theme.set('contrast'); // high-contrast mode
 ```
 
-No init call needed. It auto-restores from `localStorage` on import. Respects `prefers-color-scheme` if no saved preference exists. Attaches to `window.theme` for devtools access. Because theme toggles are not rocket science.
+No init call needed. It auto-restores from `localStorage` on import. Respects `prefers-color-scheme` if no saved preference exists. Attaches to `window.theme` for devtools access.
 
 ---
 
