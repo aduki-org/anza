@@ -17,6 +17,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.7] — 2026-06-13
+
+### Changed
+
+- Updated README and package descriptions to clarify the "instant" build step.
+
+---
+
 ## [0.3.6] — 2026-06-13
 
 ### Fixed
