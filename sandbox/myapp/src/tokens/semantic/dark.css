@@ -1,0 +1,61 @@
+/**
+ * tokens/semantic/dark.css
+ *
+ * Semantic design token overrides for the Dark theme.
+ */
+
+[data-theme="dark"] {
+  /* Surfaces */
+  --background:            var(--gray-950);
+  --background-elevated:   var(--gray-900);
+  --background-inverse:    var(--gray-50);
+
+  /* Content (Text & Icons) */
+  --foreground:           var(--gray-50);
+  --foreground-muted:     var(--gray-400);
+  --foreground-disabled:   var(--gray-600);
+  --foreground-inverse:    var(--gray-900);
+  --foreground-link:       var(--brand-300);
+
+  /* Interactive Elements */
+  --primary:               var(--brand-400);
+  --primary-hover:         var(--brand-300);
+  --primary-active:        var(--brand-200);
+  --primary-focus:         var(--brand-400);
+  --primary-disabled:      var(--gray-700);
+  --primary-foreground:    var(--gray-0);
+
+  /* Borders */
+  --border:                var(--gray-800);
+  --border-strong:         var(--gray-600);
+  --border-focus:          var(--brand-400);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Surfaces */
+    --background:            var(--gray-950);
+    --background-elevated:   var(--gray-900);
+    --background-inverse:    var(--gray-50);
+
+    /* Content (Text & Icons) */
+    --foreground:           var(--gray-50);
+    --foreground-muted:     var(--gray-400);
+    --foreground-disabled:   var(--gray-600);
+    --foreground-inverse:    var(--gray-900);
+    --foreground-link:       var(--brand-300);
+
+    /* Interactive Elements */
+    --primary:               var(--brand-400);
+    --primary-hover:         var(--brand-300);
+    --primary-active:        var(--brand-200);
+    --primary-focus:         var(--brand-400);
+    --primary-disabled:      var(--gray-700);
+    --primary-foreground:    var(--gray-0);
+
+    /* Borders */
+    --border:                var(--gray-800);
+    --border-strong:         var(--gray-600);
+    --border-focus:          var(--brand-400);
+  }
+}

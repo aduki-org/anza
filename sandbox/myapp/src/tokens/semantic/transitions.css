@@ -1,0 +1,32 @@
+/**
+ * tokens/semantic/transitions.css
+ *
+ * View Transition pseudo-element theming.
+ * Connects the browser's CSS View Transitions API to the semantic token system.
+ */
+
+:root {
+  /* Backdrop behind old and new page snapshots during a transition */
+  --transition-bg: var(--color-surface-page);
+
+  /* Timing tokens used by JS when calling startViewTransition */
+  --transition-duration: var(--duration-normal);
+  --transition-easing: var(--ease-out);
+
+  /* Directional modifiers — pushed pages feel different from popped pages */
+  --transition-push: var(--ease-out);
+  --transition-pop: var(--ease-in);
+  --transition-replace: var(--ease-in-out);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  background: var(--transition-bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-duration: 0ms;
+    --transition-easing: linear;
+  }
+}

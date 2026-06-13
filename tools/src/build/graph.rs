@@ -322,7 +322,7 @@ pub fn resolve(
 
     let hash = hashes.get(file);
     let prior = cache.as_ref().and_then(|c| c.hashes.get(file));
-    let copy = hash != prior;
+    let copy = hash != prior || !target.exists();
 
     if copy {
       if target.extension().map_or(false, |ext| ext == "html") {
