@@ -17,6 +17,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.4.1] — 2026-06-14
+
+### Fixed
+
+- **URL Detection Bug**: Fixed a critical bug in both the JS runtime (`utils.js`, `element.js`) and the Rust compiler (`parse.rs`) where inline CSS strings starting with `/*` or `<!--` were mistakenly identified as file URLs. This bug was bypassing inline CSS injection when providing CSS string arrays.
+
+---
+
 ## [0.4.0] — 2026-06-14
 
 ### Added

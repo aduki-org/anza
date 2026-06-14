@@ -148,7 +148,11 @@ impl Collector {
   /// Records a relative asset path (template/style) for copying into dist.
   fn push_asset(&mut self, s: &swc_ecma_ast::Str) {
     if let Some(v) = str_value(s) {
-      if v.starts_with("./") || v.starts_with("../") || v.starts_with('/') {
+      if (v.starts_with("./") || v.starts_with("../") || v.starts_with('/')) 
+          && !v.starts_with("/*") 
+          && !v.starts_with("<!--") 
+          && !v.contains('{') 
+          && !v.contains('<') {
         self.assets.push((v, s.span));
       }
     }

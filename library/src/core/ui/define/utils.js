@@ -51,12 +51,18 @@ export async function preloadResources(tag, styleUrls, templateUrl, inlineTempla
   }));
 
   if (inlineStyle) {
-    if (supportsSheets) {
-      const sheet = new CSSStyleSheet();
-      sheet.replaceSync(inlineStyle);
-      stylesheets.push(sheet);
-    } else {
-      cssTextAcc += inlineStyle + '\n';
+    const inlineStyles = Array.isArray(inlineStyle) ? inlineStyle : [inlineStyle];
+    // Filter out ones that are likely URLs (they were fetched above)
+    const isUrl = s => typeof s === 'string' && (s.endsWith('.css') || ((s.startsWith('./') || s.startsWith('/')) && !s.startsWith('/*') && !s.includes('{')));
+    const inlines = inlineStyles.filter(s => !isUrl(s));
+    for (const style of inlines) {
+      if (supportsSheets) {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(style);
+        stylesheets.push(sheet);
+      } else {
+        cssTextAcc += style + '\n';
+      }
     }
   }
 
@@ -99,7 +105,7 @@ export async function preloadResources(tag, styleUrls, templateUrl, inlineTempla
     templateNode = createTemplateFragment(inlineTemplate);
   }
 
-  return { templateNode, stylesheet, cssText, tagsDescriptor };
+  return { templateNode, stylesheets, cssText, tagsDescriptor };
 }
 
 /**

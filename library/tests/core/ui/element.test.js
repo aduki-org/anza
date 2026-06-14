@@ -297,6 +297,7 @@ describe('ui.element runtime', () => {
     }
   });
 
+
   it('sanitizes malformed descriptor fields safely', async () => {
     // Descriptor is validated via validateDescriptor in preloadResources.
     // Let's test with a mock/custom descriptor registration if possible, or just call validateDescriptor directly.

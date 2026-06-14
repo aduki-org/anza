@@ -49,14 +49,17 @@ export function element(tag, spec, base) {
   warnMissingBase(tag, 'style', spec.style, base);
   warnMissingBase(tag, 'template', spec.template, base);
 
+  const isStyleUrl = s => typeof s === 'string' && (s.endsWith('.css') || ((s.startsWith('./') || s.startsWith('/')) && !s.startsWith('/*') && !s.includes('{')));
+  const isTemplateUrl = s => typeof s === 'string' && (s.endsWith('.html') || ((s.startsWith('./') || s.startsWith('/')) && !s.startsWith('<!--') && !s.includes('<')));
+
   // Resolve absolute URLs relative to import.meta.url (base)
   const styleUrls = Array.isArray(spec.style) 
-    ? spec.style.filter(s => s && base && (s.endsWith('.css') || s.startsWith('./') || s.startsWith('/'))).map(s => new URL(s, base).href)
-    : (spec.style && base && (spec.style.endsWith('.css') || spec.style.startsWith('./') || spec.style.startsWith('/'))
+    ? spec.style.filter(s => s && base && isStyleUrl(s)).map(s => new URL(s, base).href)
+    : (spec.style && base && isStyleUrl(spec.style)
       ? [new URL(spec.style, base).href]
       : []);
       
-  const templateUrl = spec.template && base && (spec.template.endsWith('.html') || spec.template.startsWith('./') || spec.template.startsWith('/'))
+  const templateUrl = spec.template && base && isTemplateUrl(spec.template)
     ? new URL(spec.template, base).href
     : null;
 
