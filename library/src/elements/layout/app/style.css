@@ -5,7 +5,7 @@
   width: 100%;
   background: var(--color-surface-page);
   color: var(--color-content-primary);
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans);
 }
 
 .app-frame {

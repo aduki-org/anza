@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-sans);
     font-size: var(--font-size-base);
     color-scheme: light dark;
   }
@@ -24,7 +24,7 @@
 
   /* Typography Defaults */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-family-sans);
+    font-family: var(--font-sans);
     color: var(--color-content-primary);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-tight);

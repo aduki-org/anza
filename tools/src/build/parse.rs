@@ -171,8 +171,18 @@ impl Collector {
                         if let Prop::KeyValue(ikv) = &**inner {
                           if let PropName::Ident(ik) = &ikv.key {
                             if ik.sym == "html" || ik.sym == "css" {
-                              if let Expr::Lit(Lit::Str(s)) = &*ikv.value {
-                                self.push_asset(s);
+                              match &*ikv.value {
+                                Expr::Lit(Lit::Str(s)) => self.push_asset(s),
+                                Expr::Array(arr) => {
+                                  for elem in &arr.elems {
+                                    if let Some(e) = elem {
+                                      if let Expr::Lit(Lit::Str(s)) = &*e.expr {
+                                        self.push_asset(s);
+                                      }
+                                    }
+                                  }
+                                }
+                                _ => {}
                               }
                             }
                           }

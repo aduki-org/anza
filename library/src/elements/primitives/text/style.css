@@ -5,7 +5,7 @@
   /* Component Tokens — Semantic Reference Only */
   --text-size:   var(--font-size-base);
   --text-weight: var(--font-weight-regular);
-  --text-family: var(--font-family-sans);
+  --text-family: var(--font-sans);
   --text-height: var(--line-height-normal);
   --text-color:  var(--color-content-primary);
 }

@@ -3,7 +3,7 @@
   width: 100%;
   height: calc(var(--space-24) * 3);
   position: relative;
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans);
 }
 
 canvas {

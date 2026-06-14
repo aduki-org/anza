@@ -1,7 +1,7 @@
 import { BaseElement } from '../base.js';
 import { scheduleFrame, yieldTask } from '../schedule.js';
 import { router } from '../../router/index.js';
-import { specRegistry, internalsMap, initializedMap, pendingUpdatesMap, updateScheduledMap } from './state.js';
+import { specRegistry, internalsMap, initializedMap, pendingUpdatesMap, updateScheduledMap, assetCache } from './state.js';
 import { preloadResources } from './utils.js';
 import { createComponentContext } from './proxy.js';
 
@@ -50,40 +50,45 @@ export function element(tag, spec, base) {
   warnMissingBase(tag, 'template', spec.template, base);
 
   // Resolve absolute URLs relative to import.meta.url (base)
-  const styleUrl = spec.style && base && (spec.style.endsWith('.css') || spec.style.startsWith('./') || spec.style.startsWith('/'))
-    ? new URL(spec.style, base).href
-    : null;
+  const styleUrls = Array.isArray(spec.style) 
+    ? spec.style.filter(s => s && base && (s.endsWith('.css') || s.startsWith('./') || s.startsWith('/'))).map(s => new URL(s, base).href)
+    : (spec.style && base && (spec.style.endsWith('.css') || spec.style.startsWith('./') || spec.style.startsWith('/'))
+      ? [new URL(spec.style, base).href]
+      : []);
+      
   const templateUrl = spec.template && base && (spec.template.endsWith('.html') || spec.template.startsWith('./') || spec.template.startsWith('/'))
     ? new URL(spec.template, base).href
     : null;
 
   // Initiate resource fetching exactly once per component registration (R-06)
   let resolved = null;
-  let resourcesPromise = preloadResources(tag, styleUrl, templateUrl, spec.template, spec.style).then(res => {
+  let resourcesPromise = preloadResources(tag, styleUrls, templateUrl, spec.template, spec.style).then(res => {
     resolved = res;
     return res;
   });
 
   // Handle hot reloading of constructable stylesheets (one global listener per unique styleUrl - R-05)
-  if (styleUrl && typeof window !== 'undefined') {
+  if (styleUrls.length > 0 && typeof window !== 'undefined') {
     if (!window.__native_hmr_listeners__) {
       window.__native_hmr_listeners__ = new Set();
     }
-    if (!window.__native_hmr_listeners__.has(styleUrl)) {
-      window.__native_hmr_listeners__.add(styleUrl);
-      const hmrHandler = async (e) => {
-        const { path: changedPath, css } = e.detail;
-        const absoluteChangedUrl = new URL(changedPath, window.location.origin).href;
-        
-        if (styleUrl === absoluteChangedUrl || styleUrl.endsWith(changedPath)) {
-          const res = await resourcesPromise;
-          if (res.stylesheet) {
-            res.stylesheet.replaceSync(css);
-            console.log(`[HMR] Shared AdoptedStyleSheet hot-swapped for <${tag}>`);
+    for (const styleUrl of styleUrls) {
+      if (!window.__native_hmr_listeners__.has(styleUrl)) {
+        window.__native_hmr_listeners__.add(styleUrl);
+        const hmrHandler = async (e) => {
+          const { path: changedPath, css } = e.detail;
+          const absoluteChangedUrl = new URL(changedPath, window.location.origin).href;
+          
+          if (styleUrl === absoluteChangedUrl || styleUrl.endsWith(changedPath)) {
+            const sheet = assetCache.get(styleUrl);
+            if (sheet && typeof sheet.replaceSync === 'function') {
+              sheet.replaceSync(css);
+              console.log(`[HMR] Shared AdoptedStyleSheet hot-swapped for <${tag}>`);
+            }
           }
-        }
-      };
-      window.addEventListener('anza:hmr:css', hmrHandler);
+        };
+        window.addEventListener('anza:hmr:css', hmrHandler);
+      }
     }
   }
 
@@ -100,7 +105,7 @@ export function element(tag, spec, base) {
         
         if (templateUrl === absoluteChangedUrl || templateUrl.endsWith(changedPath)) {
           // Re-parse HTML into the cached resolved object
-          resourcesPromise = preloadResources(tag, styleUrl, null, html, spec.style).then(res => {
+          resourcesPromise = preloadResources(tag, styleUrls, null, html, spec.style).then(res => {
             resolved = res;
             // Now re-bind instances!
             const instances = window.__native_hmr_instances__?.get(tag) || [];
@@ -169,7 +174,7 @@ export function element(tag, spec, base) {
       if (!res) {
         res = await resourcesPromise;
       }
-      const { templateNode, stylesheet, cssText, tagsDescriptor } = res;
+      const { templateNode, stylesheets, cssText, tagsDescriptor } = res;
 
       if (!this.ctrl || this.ctrl.signal.aborted || !this.isConnected) {
         return;
@@ -186,9 +191,9 @@ export function element(tag, spec, base) {
         this.shadowRoot.appendChild(templateNode.cloneNode(true));
       }
 
-      if (stylesheet) {
+      if (stylesheets && stylesheets.length > 0) {
         // Constructable stylesheets path
-        this.shadowRoot.adoptedStyleSheets = [stylesheet];
+        this.shadowRoot.adoptedStyleSheets = stylesheets;
       } else if (cssText) {
         // Fallback: inject <style> for browsers without adoptedStyleSheets
         const style = document.createElement('style');
@@ -263,13 +268,13 @@ export function element(tag, spec, base) {
       if (!res) {
         res = await resourcesPromise;
       }
-      const { templateNode, stylesheet, cssText, tagsDescriptor } = res;
+      const { templateNode, stylesheets, cssText, tagsDescriptor } = res;
 
       if (templateNode) {
         this.shadowRoot.appendChild(templateNode.cloneNode(true));
       }
-      if (stylesheet) {
-        this.shadowRoot.adoptedStyleSheets = [stylesheet];
+      if (stylesheets && stylesheets.length > 0) {
+        this.shadowRoot.adoptedStyleSheets = stylesheets;
       } else if (cssText) {
         const style = document.createElement('style');
         style.textContent = cssText;

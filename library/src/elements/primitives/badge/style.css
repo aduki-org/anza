@@ -4,7 +4,7 @@
   display: inline-flex;
   /* Component Tokens — Semantic Reference Only */
   --badge-radius: var(--radius-full);
-  --badge-font:   var(--font-family-sans);
+  --badge-font:   var(--font-sans);
   --badge-weight: var(--font-weight-semibold);
   --badge-size:   var(--font-size-xs);
   

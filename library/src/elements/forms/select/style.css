@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans);
   position: relative;
   /* Component Tokens — Semantic Reference Only */
   --select-bg:           var(--color-surface-page);

@@ -17,6 +17,26 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.4.0] — 2026-06-14
+
+### Added
+
+- Natively support arrays of multiple CSS imports in component definitions (`template: { html, css: ['./a.css', './b.css'] }`) across both the JavaScript library runtime and the Rust compiler.
+
+### Changed
+
+- Replaced CSS Custom Highlight API implementation with PrismJS for `view-code` syntax highlighting.
+
+---
+
+## [0.3.9] — 2026-06-13
+
+### Changed
+
+- Updated core component rendering to correctly process nested syntax logic and perform full syntax highlighting.
+
+---
+
 ## [0.3.7] — 2026-06-13
 
 ### Changed

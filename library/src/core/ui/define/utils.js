@@ -8,51 +8,59 @@ const supportsSheets =
 
 /**
  * Preloads style and HTML template resources asynchronously exactly once.
- * Returns { templateNode, stylesheet, cssText, tagsDescriptor }.
- * When constructable stylesheets are unsupported, stylesheet is null and
- * cssText carries the raw CSS for <style> injection.
+ * Returns { templateNode, stylesheets, cssText, tagsDescriptor }.
+ * When constructable stylesheets are unsupported, stylesheets is an empty array and
+ * cssText carries the concatenated raw CSS for <style> injection.
  */
-export async function preloadResources(tag, styleUrl, templateUrl, inlineTemplate, inlineStyle) {
+export async function preloadResources(tag, styleUrls, templateUrl, inlineTemplate, inlineStyle) {
   let templateNode = null;
-  let stylesheet = null;
-  let cssText = null;
+  let stylesheets = [];
+  let cssTextAcc = '';
   let tagsDescriptor = null;
 
   // Compile / Fetch styles
-  if (styleUrl) {
-    if (assetCache.has(styleUrl)) {
-      const cached = assetCache.get(styleUrl);
+  const urls = Array.isArray(styleUrls) ? styleUrls : (styleUrls ? [styleUrls] : []);
+  
+  await Promise.all(urls.map(async (url) => {
+    if (assetCache.has(url)) {
+      const cached = assetCache.get(url);
       if (supportsSheets) {
-        stylesheet = cached;
+        stylesheets.push(cached);
       } else {
-        cssText = cached;
+        cssTextAcc += cached + '\n';
       }
     } else {
       try {
-        const res = await fetch(styleUrl);
+        const res = await fetch(url);
         if (res.ok) {
           const css = await res.text();
           if (supportsSheets) {
-            stylesheet = new CSSStyleSheet();
-            stylesheet.replaceSync(css);
-            assetCache.set(styleUrl, stylesheet);
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(css);
+            assetCache.set(url, sheet);
+            stylesheets.push(sheet);
           } else {
-            cssText = css;
-            assetCache.set(styleUrl, css);
+            assetCache.set(url, css);
+            cssTextAcc += css + '\n';
           }
         }
       } catch (err) {
-        console.error(`Failed to load style resource for element ${tag}:`, err);
+        console.error(`Failed to load style resource ${url} for element ${tag}:`, err);
       }
     }
-  } else if (inlineStyle) {
+  }));
+
+  if (inlineStyle) {
     if (supportsSheets) {
-      stylesheet = new CSSStyleSheet();
-      stylesheet.replaceSync(inlineStyle);
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(inlineStyle);
+      stylesheets.push(sheet);
     } else {
-      cssText = inlineStyle;
+      cssTextAcc += inlineStyle + '\n';
     }
   }
+
+  const cssText = cssTextAcc.trim() ? cssTextAcc : null;
 
   // Compile / Fetch Template markup
   if (templateUrl) {

@@ -10,7 +10,7 @@
   overflow: hidden;
   background: var(--color-interactive-disabled);
   color: var(--color-content-secondary);
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans);
   font-size: calc(var(--avatar-size, var(--space-8)) * 0.4);
   font-weight: var(--font-weight-medium);
   user-select: none;

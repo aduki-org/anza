@@ -13,7 +13,7 @@
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   color: var(--color-content-primary);
   text-align: left;

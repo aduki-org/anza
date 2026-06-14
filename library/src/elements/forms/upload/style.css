@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans);
   width: 100%;
   /* Component Tokens — Semantic Reference Only */
   --upload-bg:           var(--color-surface-page);

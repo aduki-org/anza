@@ -10,7 +10,7 @@
   --btn-bg-disabled: var(--color-interactive-disabled);
   --btn-color:       var(--color-content-inverse);
   --btn-radius:      var(--radius-md);
-  --btn-font:        var(--font-family-sans);
+  --btn-font:        var(--font-sans);
   --btn-size:        var(--font-size-sm);
   --btn-weight:      var(--font-weight-medium);
   --btn-padding-y:   var(--space-2);
